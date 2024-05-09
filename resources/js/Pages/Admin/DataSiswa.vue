@@ -1,5 +1,7 @@
 <template>
-    <h1>Data Siswa</h1>
+    <h1>Data Induk Siswa</h1>
+    <button>Tambah Data Siswa</button>
+    <p>Show 10 entries</p>
 </template>
 <script setup>
 import { onMounted } from "vue";

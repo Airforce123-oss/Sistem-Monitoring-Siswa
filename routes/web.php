@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\dataSiswaController;
+use App\Http\Controllers\Admin\dataSiswaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\UserController;
@@ -49,9 +49,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'redirectAdmin'], function ()
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/DataSiswa', [dataSiswaController::class, 'index1'])->name('admin.dataSiswa');
 });
 
-Route::get('/Admin/dataSiswa', [dataSiswaController::class, 'index'])->name('admin.dataSiswa');
+
 
 
 // end
