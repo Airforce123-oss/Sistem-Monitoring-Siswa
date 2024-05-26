@@ -35,20 +35,14 @@ const getSections = (class_id) => {
     });
 };
 
-const submit = () => {
-    form.post(route("student.store"), {
-        preserveScroll: true,
-    });
+const createStudent = () => {
+    form.post(route("students.store"));
 };
 
 onMounted(() => {
     initFlowbite();
 });
 </script>
-
-
-
-
 
 <template>
     <Head title="Students" />
@@ -62,7 +56,7 @@ onMounted(() => {
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
                 <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
-                    <form @submit.prevent="submit">
+                    <form @submit.prevent="createStudent">
                         <div class="shadow sm:rounded-md sm:overflow-hidden">
                             <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                 <div>
@@ -116,6 +110,7 @@ onMounted(() => {
                                                     form.errors.email,
                                             }"
                                         />
+                                        <InputError :message="form.errors.currents_password" class="mt-2" />
                                         <InputError
                                             class="mt-2"
                                             :message="form.errors.email"
@@ -174,6 +169,7 @@ onMounted(() => {
                                             </option>
                                             <option
                                                 v-for="section in sections.data"
+                                                :key="section.id"
                                                 :value="section.id"
                                             >
                                                 {{ section.name }}
