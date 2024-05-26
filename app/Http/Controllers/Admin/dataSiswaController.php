@@ -11,6 +11,6 @@ class dataSiswaController extends Controller
 {
     public function index1()
     {
-        return Inertia::render('Admin/DataSiswa');
+        return Inertia('DataSiswa/dataSiswa');
     }
 }

@@ -17,7 +17,7 @@ class AdminMiddleware
     {
         if (auth()->check() && auth()->user()->isAdmin == 1) {
             return $next($request);
-        } 
-        return redirect()->route('home')->with('error', 'Access denied. You are not an admin.');
+        }
+        return redirect()->route('dashboard')->with('error', 'Access denied. You are not an admin.');
     }
 }
