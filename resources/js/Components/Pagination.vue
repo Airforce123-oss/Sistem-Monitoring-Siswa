@@ -1,10 +1,9 @@
 <script setup>
-import { router, usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 
 defineProps({
     data: {
         type: Object,
-        required: true,
     },
     pageNumberUpdated: {
         type: Function,
@@ -12,7 +11,7 @@ defineProps({
     },
 });
 
-const updatePageNumber = (link) => {
+const pageNumberUpdated = (link) => {
     let pageNumber = link.url.split("=")[1];
 
     router.visit(`/students?&page=${pageNumber}`, {
@@ -22,7 +21,6 @@ const updatePageNumber = (link) => {
 </script>
 
 <template>
-    <!--{{ data }} -->
     <div class="max-w-7xl mx-auto py-6">
         <div class="max-w-none mx-auto">
             <div class="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -33,7 +31,7 @@ const updatePageNumber = (link) => {
                     <div
                         class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
                     >
-                        <div>
+                        <div class="mr-10">
                             <p class="text-sm text-gray-700">
                                 Showing
                                 <!-- space -->
@@ -62,8 +60,8 @@ const updatePageNumber = (link) => {
                                 aria-label="Pagination"
                             >
                                 <button
-                                    @click.prevent="updatePageNumber(link)"
                                     v-for="(link, index) in data.meta.links"
+                                    @click.prevent="pageNumberUpdated(link)"
                                     :key="index"
                                     :disabled="link.active || !link.url"
                                     class="relative inline-flex items-center px-4 py-2 border text-sm font-medium"

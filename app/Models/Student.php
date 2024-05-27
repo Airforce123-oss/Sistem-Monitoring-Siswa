@@ -16,9 +16,7 @@ class Student extends Model
         'section_id'
     ];
 
-    protected $with = ['class', 'section'];
-
-    public function class()
+    public function class ()
     {
         return $this->belongsTo(Classes::class, 'class_id');
     }

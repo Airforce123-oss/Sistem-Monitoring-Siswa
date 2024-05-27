@@ -1,25 +1,25 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import { watch, ref } from "vue";
+import { Head, useForm, usePage, Link } from "@inertiajs/vue3";
+import { watch, ref, onMounted } from "vue";
 import axios from "axios";
 import InputError from "@/Components/InputError.vue";
 
 defineProps({
     classes: {
         type: Object,
+        required: true,
     },
 });
 
 let sections = ref({});
+const student = usePage().props.student;
 
 const form = useForm({
-    name: "",
-    email: "",
-    class_id: "",
-    section_id: "",
+    name: student.data.name,
+    email: student.data.email,
+    class_id: student.data.class.id,
+    section_id: student.data.section.id,
 });
 
 watch(
@@ -29,34 +29,36 @@ watch(
     }
 );
 
+onMounted(() => {
+    getSections(student.data.class.id);
+});
+
 const getSections = (class_id) => {
     axios.get("/api/sections?class_id=" + class_id).then((response) => {
         sections.value = response.data;
     });
 };
 
-const createStudent = () => {
-    form.post(route("students.store"));
+const submit = () => {
+    form.put(route("students.update", student.data.id), {
+        preserveScroll: true,
+    });
 };
-
-onMounted(() => {
-    initFlowbite();
-});
 </script>
 
 <template>
-    <Head title="Students" />
+    <Head title="UpdateStudents" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Students
+                Update Student
             </h2>
         </template>
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
                 <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
-                    <form @submit.prevent="createStudent">
+                    <form @submit.prevent="submit">
                         <div class="shadow sm:rounded-md sm:overflow-hidden">
                             <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
                                 <div>
@@ -109,12 +111,6 @@ onMounted(() => {
                                                 'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
                                                     form.errors.email,
                                             }"
-                                        />
-                                        <InputError
-                                            :message="
-                                                form.errors.currents_password
-                                            "
-                                            class="mt-2"
                                         />
                                         <InputError
                                             class="mt-2"
@@ -174,7 +170,6 @@ onMounted(() => {
                                             </option>
                                             <option
                                                 v-for="section in sections.data"
-                                                :key="section.id"
                                                 :value="section.id"
                                             >
                                                 {{ section.name }}
@@ -192,15 +187,15 @@ onMounted(() => {
                             >
                                 <Link
                                     :href="route('students.index')"
-                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
                                 >
                                     Cancel
                                 </Link>
                                 <button
                                     type="submit"
-                                    class="bg-[#8ec3b3] border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Save
+                                    Update
                                 </button>
                             </div>
                         </div>
