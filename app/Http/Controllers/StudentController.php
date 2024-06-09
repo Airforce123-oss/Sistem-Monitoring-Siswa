@@ -22,7 +22,7 @@ class studentController extends Controller
 
         return inertia('Students/index', [
             'students' => StudentResource::collection(
-                $studentQuery->paginate(10)
+                $studentQuery->paginate(5)
             ),
             'search' => request('search') ?? ''
         ]);

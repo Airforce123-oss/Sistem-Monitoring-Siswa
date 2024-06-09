@@ -63,10 +63,10 @@ onMounted(() => {
                                     <h3
                                         class="text-lg leading-6 font-medium text-gray-900"
                                     >
-                                        Student Information
+                                        Informasi Siswa
                                     </h3>
                                     <p class="mt-1 text-sm text-gray-500">
-                                        Use this form to create a new student.
+                                        Gunakan Form ini untuk mengisi data siswa
                                     </p>
                                 </div>
 
@@ -75,7 +75,7 @@ onMounted(() => {
                                         <label
                                             for="name"
                                             class="block text-sm font-medium text-gray-700"
-                                            >Name</label
+                                            >Nama</label
                                         >
                                         <input
                                             v-model="form.name"
@@ -97,7 +97,7 @@ onMounted(() => {
                                         <label
                                             for="email"
                                             class="block text-sm font-medium text-gray-700"
-                                            >Email Address</label
+                                            >Alamat Email</label
                                         >
                                         <input
                                             v-model="form.email"
@@ -126,7 +126,7 @@ onMounted(() => {
                                         <label
                                             for="class_id"
                                             class="block text-sm font-medium text-gray-700"
-                                            >Class</label
+                                            ></label
                                         >
                                         <select
                                             v-model="form.class_id"
@@ -138,7 +138,7 @@ onMounted(() => {
                                             }"
                                         >
                                             <option value="">
-                                                Select a Class
+                                                Pilih Kelas
                                             </option>
                                             <option
                                                 v-for="item in classes.data"
@@ -170,7 +170,7 @@ onMounted(() => {
                                             }"
                                         >
                                             <option value="">
-                                                Select a Section
+                                                Pilih Section
                                             </option>
                                             <option
                                                 v-for="section in sections.data"
@@ -194,13 +194,13 @@ onMounted(() => {
                                     :href="route('students.index')"
                                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
                                 >
-                                    Cancel
+                                    Batal
                                 </Link>
                                 <button
                                     type="submit"
                                     class="bg-[#8ec3b3] border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Save
+                                    Simpan
                                 </button>
                             </div>
                         </div>

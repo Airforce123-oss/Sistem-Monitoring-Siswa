@@ -4,20 +4,23 @@ import { router } from "@inertiajs/vue3";
 defineProps({
     data: {
         type: Object,
+        required: true,
     },
-    pageNumberUpdated: {
+    updatedPageNumber: {
         type: Function,
         required: true,
     },
 });
 
-const pageNumberUpdated = (link) => {
+/**
+ const pageNumberUpdated = (link) => {
     let pageNumber = link.url.split("=")[1];
 
     router.visit(`/students?&page=${pageNumber}`, {
         preserveScroll: true,
     });
 };
+ */
 </script>
 
 <template>
@@ -61,7 +64,7 @@ const pageNumberUpdated = (link) => {
                             >
                                 <button
                                     v-for="(link, index) in data.meta.links"
-                                    @click.prevent="pageNumberUpdated(link)"
+                                    @click.prevent="updatedPageNumber(link)"
                                     :key="index"
                                     :disabled="link.active || !link.url"
                                     class="relative inline-flex items-center px-4 py-2 border text-sm font-medium"
@@ -72,7 +75,7 @@ const pageNumberUpdated = (link) => {
                                             !link.active,
                                     }"
                                 >
-                                    <span v-html="link.label"></span>
+                                    <span v-html="link.label"></span> 
                                 </button>
                             </nav>
                         </div>

@@ -1,7 +1,68 @@
 <script setup>
-import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";
+import Pagination from "../../Components/Pagination.vue";
+import PlusIcon from "../../Components/Icons/PlusIcon.vue";
+import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
+import { onMounted, ref, watch, computed } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+
+defineProps({
+    students: {
+        type: Object,
+    },
+});
+
+let pageNumber = ref(1),
+    searchTerm = ref(usePage().props.search ?? "");
+
+let studentsUrl = computed(() => {
+    const url = new URL(route("students.index"));
+
+    url.searchParams.set("page", pageNumber.value);
+
+    if (searchTerm.value) {
+        url.searchParams.set("search", searchTerm.value);
+    }
+
+    return url;
+});
+
+watch(
+    () => studentsUrl.value,
+    (updatedStudentsUrl) => {
+        router.visit(updatedStudentsUrl, {
+            replace: true,
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }
+);
+
+/**
+ watch(
+    () => search.value,
+    (value) => {
+        if (value) {
+            pageNumber.value = 1;
+        }
+    }
+)
+ */
+
+const deleteForm = useForm({});
+
+const deleteStudent = (id) => {
+    if (confirm("Are you sure you want to delete this student?")) {
+        deleteForm.delete(route("students.destroy", id), {
+            preserveScroll: true,
+        });
+    }
+};
+
+const updatedPageNumber = (link) => {
+    //console.log(link.url);
+    pageNumber.value = link.url.split("=")[1];
+};
 
 onMounted(() => {
     initFlowbite();
@@ -83,13 +144,8 @@ onMounted(() => {
                             ></path>
                         </svg>
                     </button>
+
                     <!-- Apps -->
-                    <button
-                        type="button"
-                        class="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    >
-                        <span class="sr-only">View notifications</span>
-                    </button>
 
                     <button
                         type="button"
@@ -116,6 +172,7 @@ onMounted(() => {
                             />
                         </svg>
                     </button>
+
                     <!-- Dropdown menu -->
                     <div
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
@@ -148,62 +205,112 @@ onMounted(() => {
             </div>
         </nav>
 
-        <!-- Main -->
+        <!-- start1 -->
 
-        <main class="p-4 md:ml-64 h-screen pt-20">
-            <Head title="Dashboard" />
-            <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
-            >
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
-                    id=""
+        <main class="p-4 md:ml-64 h-auto pt-20">
+            <Head title="Class" />
+
+            <div class="flex-1 p-6">
+                <h1 class="text-3xl font-bold mb-4">Kelas</h1>
+                <button
+                    class="border border-transparent bg-[#8ec3b3] bg-[#8ec3b3 py-2 px-4 rounded mb-4 text-sm font-medium text-white shadow-sm hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                 >
-                    <h2 class="text-center">SISWA</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        0
-                    </p>
-                </div>
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
-                >
-                    <h2 class="text-center">KELAS</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        0
-                    </p>
-                </div>
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
-                >
-                    <h2 class="text-center">TOTAL KEHADIRAN SISWA</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        0
-                    </p>
-                </div>
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
-                >
-                    <h2 class="text-center">ABSEN MASUK HARI INI</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        0
-                    </p>
+                    + Membuat Kelas Baru
+            </button>
+                <div class="bg-white p-6 rounded shadow-md">
+                    <div class="mb-4 flex justify-between items-center">
+                        <input
+                            type="text"
+                            placeholder="Cari Kelas.."
+                            class="border p-2 rounded w-1/3"
+                        />
+                        <div>
+                            <!--           <button
+                                class="bg-gray-200 text-gray-700 py-2 px-4 rounded mr-2"
+                            >
+                                Copy
+                            </button>
+                               <button
+                                class="bg-gray-200 text-gray-700 py-2 px-4 rounded"
+                            >
+                                Visibility
+                            </button>
+                        
+                        -->
+                            <button
+                                class="bg-gray-200 text-gray-700 py-2 px-4 rounded mr-2"
+                            >
+                                Excel
+                            </button>
+                            <button
+                                class="bg-gray-200 text-gray-700 py-2 px-4 rounded mr-2"
+                            >
+                                PDF
+                            </button>
+                        </div>
+                    </div>
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 border-b">No</th>
+                                <th class="py-2 px-4 border-b">Nama</th>
+                                <th class="py-2 px-4 border-b">Tipe Kelas</th>
+                                <th class="py-2 px-4 border-b">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-2 px-4 border-b">1</td>
+                                <td class="py-2 px-4 border-b">JSS 2</td>
+                                <td class="py-2 px-4 border-b">
+                                    Junior Secondary
+                                </td>
+                                <td class="py-2 px-4 border-b text-center">
+                                    <button
+                                        class="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                                    >
+                                        ...
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b">2</td>
+                                <td class="py-2 px-4 border-b">JSS 3</td>
+                                <td class="py-2 px-4 border-b">
+                                    Junior Secondary
+                                </td>
+                                <td class="py-2 px-4 border-b text-center">
+                                    <button
+                                        class="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                                    >
+                                        ...
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b">3</td>
+                                <td class="py-2 px-4 border-b">Nursery 1</td>
+                                <td class="py-2 px-4 border-b">Nursery</td>
+                                <td class="py-2 px-4 border-b text-center">
+                                    <button
+                                        class="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                                    >
+                                        ...
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mt-4">
+                        <span>Showing 1 to 10 of 10 entries</span>
+                    </div>
                 </div>
             </div>
         </main>
-        <!-- Sidebar -->
 
+        <!-- end1-->
+
+        <!-- Sidebar -->
         <aside
             class="fixed top-0 left-0 z-40 w-60 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-900"
             aria-label="Sidenav"
@@ -406,6 +513,7 @@ onMounted(() => {
                             >
                         </button>
                     </li>
+
                     <li>
                         <button
                             type="button"

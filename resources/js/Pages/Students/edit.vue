@@ -65,7 +65,7 @@ const submit = () => {
                                     <h3
                                         class="text-lg leading-6 font-medium text-gray-900"
                                     >
-                                        Student Information
+                                        Informasi Students
                                     </h3>
                                     <p class="mt-1 text-sm text-gray-500">
                                         Use this form to create a new student.
@@ -171,6 +171,7 @@ const submit = () => {
                                             <option
                                                 v-for="section in sections.data"
                                                 :value="section.id"
+                                                :key="section.id"
                                             >
                                                 {{ section.name }}
                                             </option>

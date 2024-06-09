@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SectionController;
+use App\Models\Student;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('sections', SectionController::class)->name('sections.index');
+
+Route::get('/students/count', function () {
+    $totalSiswa = Student::count();
+    return response()->json(['total' => $totalSiswa]);
+});
