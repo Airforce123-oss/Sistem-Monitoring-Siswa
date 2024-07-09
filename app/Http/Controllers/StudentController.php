@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Classes;
+use App\Models\Section;
 
 class studentController extends Controller
 {
@@ -18,13 +19,16 @@ class studentController extends Controller
 
         $studentQuery = Student::query();
 
-        $studentQuery = $this->applySearch($studentQuery, request('search'));
+     
+       // applysearch work
+       $this->applySearch($studentQuery, $request->search);
+
+         // Paginasi dengan nomor halaman dan tambahkan parameter pencarian ke link paginasi
+        $students = $studentQuery->paginate(10)->appends($request->only('search'));
 
         return inertia('Students/index', [
-            'students' => StudentResource::collection(
-                $studentQuery->paginate(5)
-            ),
-            'search' => request('search') ?? ''
+            'students' => StudentResource::collection($students),
+            'search' => $request->input('search', '')
         ]);
 
     }
@@ -42,7 +46,7 @@ class studentController extends Controller
         $classes = ClassesResource::collection(Classes::all());
 
         return inertia('Students/create', [
-            'classes' => $classes
+            'classes' => $classes,
         ]);
     }
     public function store(StoreStudentRequest $request)
@@ -57,7 +61,8 @@ class studentController extends Controller
 
         return inertia('Students/edit', [
             'student' => StudentResource::make($student),
-            'classes' => $classes
+            'classes' => $classes,
+          
         ]);
     }
     public function update(UpdateStudentRequest $request, Student $student)
@@ -71,5 +76,29 @@ class studentController extends Controller
         $student->delete();
 
         return redirect()->route('students.index');
+    }
+    
+    public function getSections(Request $request)
+    {
+        $classId = $request->query('class_id');
+        if (!$classId) {
+            return response()->json(['error' => 'Class ID is required'], 400);
+        }
+
+        $sections = Section::where('class_id', $classId)->get();
+
+        return response()->json($sections);
+    }
+    public function show($id)
+    {
+        $student = Student::find($id);
+    
+        if (!$student) {
+            return redirect()->route('dashboard')->with('error', 'Student not found');
+        }
+    
+        return inertia('Students/show', [
+            'student' => StudentResource::make($student)
+        ]);
     }
 }

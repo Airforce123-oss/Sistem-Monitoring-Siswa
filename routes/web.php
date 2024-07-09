@@ -10,12 +10,15 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    /*
+       return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+     */
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -30,7 +33,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('students', StudentController::class);
     Route::resource('kelas', ClassController::class);
+    Route::get('/api/sections', [StudentController::class, 'getSections']);
+    Route::resource('/Profile',ProfileController::class);
 });
+
+//Route::resource('/Profile',ProfileController::class);
 
 // admin routes
 Route::group(['prefix' => 'admin', 'middleware' => 'redirectAdmin'], function () {
@@ -44,6 +51,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'redirectAdmin'], function ()
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    
 });
 
 

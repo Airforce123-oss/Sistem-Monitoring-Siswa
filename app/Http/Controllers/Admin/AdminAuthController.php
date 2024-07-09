@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Http\Controllers\Admin\DB;
 
 class AdminAuthController extends Controller
 {
@@ -29,6 +30,7 @@ class AdminAuthController extends Controller
 
     public function showRegisterForm()
     {
+        //$role = DB::table('role_type_users')->get();
         return Inertia::render('Admin/Auth/Register');
     }
 

@@ -24,7 +24,6 @@ class ListSectionsData extends FormRequest
         return [
             'class_id' => [
                 'required',
-                'exists:classes,id'
             ],
         ];
     }

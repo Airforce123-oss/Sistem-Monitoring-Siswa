@@ -38,7 +38,7 @@ const submit = () => {
             >
                 <img
                     src="/images/barunawati.webp"
-                    class="w-full h-full object-cover"
+                    class="w-1/2 h-3/2 object-cover"
                     alt="Gambar Barunawati"
                 />
             </div>
@@ -100,8 +100,8 @@ const submit = () => {
                     </button>
                     -->
                     <PrimaryButton
-                        class="w-full bg-green-400 text-white py-2 rounded-lg hover:bg-blue-600 ms-4"
-                        style="text-align: center"
+                        class="w-full bg-green-400 text-white py-2 rounded-lg hover:bg-blue-600 ms-4 flex items-center justify-center"
+                        style="text-align: center; text-transform: none;"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >

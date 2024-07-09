@@ -12,4 +12,10 @@ class ClassController extends Controller
         return inertia('Kelas/index', [
         ]);
     }
+    public function create()
+    {
+        //$classes = ClassesResource::collection(Classes::all());
+
+        return inertia('Kelas/create');
+    }
 }
