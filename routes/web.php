@@ -3,22 +3,24 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\PenilaianController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TugasController;
 
 Route::get('/', function () {
-    /*
+    
        return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-     */
-    return redirect()->route('login');
+     
+    //return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -35,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('kelas', ClassController::class);
     Route::get('/api/sections', [StudentController::class, 'getSections']);
     Route::resource('/Profile',ProfileController::class);
+    Route::resource('/tugas', TugasController::class);
+    Route::resource('/penilaian', PenilaianController::class);
 });
 
 //Route::resource('/Profile',ProfileController::class);
@@ -56,4 +60,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/admin-auth.php';
 

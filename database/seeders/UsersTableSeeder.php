@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UsersTableSeeder extends Seeder
@@ -13,13 +15,16 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = [
+        // Menghapus semua data di tabel users
+        DB::table('users')->truncate();
+
+        // Memasukkan data baru
+        DB::table('users')->insert([
             [
                 'name' => 'Admin',
                 'email' => 'admin@admin.com',
-                'password' => bcrypt('password'), 
+                'password' => Hash::make('password'),
             ],
-        ];
-        User::insert($users);
+        ]);
     }
 }

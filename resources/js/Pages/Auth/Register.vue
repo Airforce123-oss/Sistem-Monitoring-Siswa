@@ -21,10 +21,9 @@ const submit = () => {
 </script>
 
 <template>
+    <!-- versi ada gambarnya -->
 
-<!-- versi ada gambarnya -->
-
-<div class="bg-[#9CF09C] flex items-center justify-center min-h-screen">
+    <div class="bg-[#9CF09C] flex items-center justify-center min-h-screen">
         <div class="bg-white shadow-md rounded-lg flex max-w-4xl w-full">
             <div
                 class="w-1/2 bg-white rounded-l-lg flex items-center justify-center"
@@ -38,15 +37,18 @@ const submit = () => {
             <div class="w-1/2 p-8">
                 <h2 class="text-2xl font-bold text-center">SELAMAT DATANG</h2>
                 <Link
-                   class="text-center text-gray-500 mb-6 "
-                   :href="route('login')"
-                   >
-                    Sign In
+                    class="text-center text-gray-500 mb-6"
+                    :href="route('login')"
+                >
+                    <p class="text-blue-500">Sign In</p>
                 </Link>
 
                 <form @submit.prevent="submit">
                     <div class="mb-4">
-                        <InputLabel for="name" class="block text-gray-700" value="Full Name"
+                        <InputLabel
+                            for="name"
+                            class="block text-gray-700 mb-2"
+                            value="Nama Lengkap"
                         />
                         <TextInput
                             id="name"
@@ -65,7 +67,10 @@ const submit = () => {
                     </div>
 
                     <div class="mb-4">
-                        <inputLabel for="email" class="block text-gray-700" value="Email"
+                        <inputLabel
+                            for="email"
+                            class="block text-gray-700 mb-2"
+                            value="Email"
                         />
                         <TextInput
                             id="email"
@@ -81,8 +86,36 @@ const submit = () => {
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
+                    <!--
+                          <div class="mb-4">
+                        <InputLabel
+                            for="password"
+                            class="block text-gray-700 mb-2"
+                            value="Nama Role"
+                        />
+                        <select
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 form-control select @error('role_name') is-invalid @enderror"
+                            name="role_name"
+                            id="role_name"
+                        >
+                            <option selected disabled>Role Type</option>
+                        </select>
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        < !-- mt-1 block w-full -- >
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.password"
+                        />
+                    </div>
+                    -->
+
                     <div class="mb-4">
-                        <InputLabel for="password" class="block text-gray-700" value="Password"
+                        <InputLabel
+                            for="password"
+                            class="block text-gray-700 mb-2"
+                            value="Password"
                         />
                         <TextInput
                             id="password"
@@ -94,11 +127,17 @@ const submit = () => {
                             placeholder="Masukkan Password"
                         />
                         <!-- mt-1 block w-full -->
-                        <InputError class="mt-2" :message="form.errors.password" />
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.password"
+                        />
                     </div>
 
                     <div class="mb-4">
-                        <InputLabel for="password" class="block text-gray-700" value="Konfirmasi Password"
+                        <InputLabel
+                            for="password"
+                            class="block text-gray-700 mb-2s"
+                            value="Konfirmasi Password"
                         />
                         <TextInput
                             id="password"
@@ -110,9 +149,12 @@ const submit = () => {
                             placeholder="Masukkan Password"
                         />
                         <!-- mt-1 block w-full -->
-                        <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.password_confirmation"
+                        />
                     </div>
-          
+
                     <div class="flex items-center justify-between mb-6">
                         <label class="flex items-center">
                             <Checkbox
@@ -138,6 +180,4 @@ const submit = () => {
             </div>
         </div>
     </div>
-
-
 </template>

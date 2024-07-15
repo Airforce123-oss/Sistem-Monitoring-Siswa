@@ -38,6 +38,7 @@ const submit = () => {
         </div>
 
         <form @submit.prevent="submit">
+            <h1>ADMIN LOGIN</h1>
             <div>
                 <InputLabel for="email" value="Email" />
 

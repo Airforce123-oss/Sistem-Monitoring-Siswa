@@ -45,7 +45,7 @@ const submit = () => {
             <div class="w-1/2 p-8">
                 <h2 class="text-2xl font-bold text-center">SELAMAT DATANG</h2>
                 <p class="text-center text-gray-500 mb-6">
-                    <a href="#" class="text-blue-500">Sign Up</a>
+                    <a href="register" class="text-blue-500">Sign Up</a>
                 </p>
                 <form @submit.prevent="submit">
                     <div class="mb-4">
@@ -101,7 +101,7 @@ const submit = () => {
                     -->
                     <PrimaryButton
                         class="w-full bg-green-400 text-white py-2 rounded-lg hover:bg-blue-600 ms-4 flex items-center justify-center"
-                        style="text-align: center; text-transform: none;"
+                        style="text-align: center; text-transform: none"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
