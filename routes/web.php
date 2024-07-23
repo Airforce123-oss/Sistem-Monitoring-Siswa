@@ -41,7 +41,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/tugasTambah', [TugasController::class, 'tambahTugas'])->name('tugas.tambah');
     Route::get('/tugasEdit', [TugasController::class, 'editTugas'])->name('tugas.edit');
     Route::resource('/penilaian', PenilaianController::class);
-    Route::resource('/mataPelajaran', MataPelajaranController::class);
+    Route::resource('matapelajaran', MataPelajaranController::class);
+    Route::resource('master_mapel', MataPelajaranController::class);
+
+    Route::get('/mataPelajaran', [MataPelajaranController::class, 'index']);
+    //Route::post('/mataPelajaran', [MataPelajaranController::class, 'store']);
+    Route::post('/mapel/store', [MataPelajaranController::class, 'store'])->name('master_mapel.store');
+    Route::put('/mataPelajaran/{id}', [MataPelajaranController::class, 'update']);  
+    Route::delete('/mataPelajaran/{id}', [MataPelajaranController::class, 'destroy']);
+
 });
 
 // Admin routes

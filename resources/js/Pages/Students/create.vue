@@ -416,6 +416,7 @@ onMounted(() => {
                             <span class="ml-3">Beranda</span>
                         </a>
                     </li>
+
                     <li>
                         <button
                             type="button"
@@ -459,13 +460,6 @@ onMounted(() => {
                                     href="students"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >Data Induk Siswa</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Absensi Siswa</a
                                 >
                             </li>
                         </ul>
@@ -530,7 +524,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -547,7 +541,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -563,39 +557,58 @@ onMounted(() => {
                                 ></path>
                             </svg>
                         </button>
+
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="#"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
-                        <button
-                            type="button"
-                            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                        <a
+                            href="penilaian"
+                            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                         >
                             <svg
-                                viewBox="0 0 576 512"
-                                class="w-6 h-6"
+                                fill="none"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                width="24"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <path
-                                    d="M144.3 32.04C106.9 31.29 63.7 41.44 18.6 61.29c-11.42 5.026-18.6 16.67-18.6 29.15l0 357.6c0 11.55 11.99 19.55 22.45 14.65c126.3-59.14 219.8 11 223.8 14.01C249.1 478.9 252.5 480 256 480c12.4 0 16-11.38 16-15.98V80.04c0-5.203-2.531-10.08-6.781-13.08C263.3 65.58 216.7 33.35 144.3 32.04zM557.4 61.29c-45.11-19.79-88.48-29.61-125.7-29.26c-72.44 1.312-118.1 33.55-120.9 34.92C306.5 69.96 304 74.83 304 80.04v383.1C304 468.4 307.5 480 320 480c3.484 0 6.938-1.125 9.781-3.328c3.925-3.018 97.44-73.16 223.8-14c10.46 4.896 22.45-3.105 22.45-14.65l.0001-357.6C575.1 77.97 568.8 66.31 557.4 61.29z"
+                                    d="M6 6C6 5.44772 6.44772 5 7 5H17C17.5523 5 18 5.44772 18 6C18 6.55228 17.5523 7 17 7H7C6.44771 7 6 6.55228 6 6Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M6 10C6 9.44771 6.44772 9 7 9H17C17.5523 9 18 9.44771 18 10C18 10.5523 17.5523 11 17 11H7C6.44771 11 6 10.5523 6 10Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M7 13C6.44772 13 6 13.4477 6 14C6 14.5523 6.44771 15 7 15H17C17.5523 15 18 14.5523 18 14C18 13.4477 17.5523 13 17 13H7Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M6 18C6 17.4477 6.44772 17 7 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H7C6.44772 19 6 18.5523 6 18Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    clip-rule="evenodd"
+                                    d="M2 4C2 2.34315 3.34315 1 5 1H19C20.6569 1 22 2.34315 22 4V20C22 21.6569 20.6569 23 19 23H5C3.34315 23 2 21.6569 2 20V4ZM5 3H19C19.5523 3 20 3.44771 20 4V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4C4 3.44772 4.44771 3 5 3Z"
+                                    fill="currentColor"
+                                    fill-rule="evenodd"
                                 />
                             </svg>
-
-                            <span
-                                class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Buku Penghubung</span
-                            >
-                        </button>
+                            <span class="ml-3">Penilaian Siswa</span>
+                        </a>
                     </li>
                 </ul>
             </div>

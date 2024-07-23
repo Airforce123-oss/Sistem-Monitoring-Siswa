@@ -292,7 +292,7 @@ onMounted(() => {
                         class="output text-center mt-5 text-xl text-[#ffffff]"
                         placeholder=""
                     >
-                        0
+                        607
                     </p>
                 </div>
 
@@ -577,7 +577,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -594,7 +594,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -612,18 +612,19 @@ onMounted(() => {
                         </button>
 
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="tugas"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
                         <a
                             href="penilaian"

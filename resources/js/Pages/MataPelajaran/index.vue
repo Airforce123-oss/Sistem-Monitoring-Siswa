@@ -6,62 +6,74 @@ import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { onMounted, ref, watch, computed } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
-defineProps({
-    students: {
+// Deklarasikan state dengan ref
+const showModal = ref(false);
+const modalTitle = ref("");
+const modalButton = ref("");
+const mapelForm = ref({
+    id_mapel: "",
+    kode_mapel: "",
+    mapel: "",
+});
+const props = defineProps({
+    master_mapel: {
         type: Object,
+        required: true,
     },
 });
 
-let pageNumber = ref(1),
-    searchTerm = ref(usePage().props.search ?? "");
-
-let studentsUrl = computed(() => {
-    const url = new URL(route("students.index"));
-
-    url.searchParams.set("page", pageNumber.value);
-
-    if (searchTerm.value) {
-        url.searchParams.set("search", searchTerm.value);
-    }
-
-    return url;
+const form = useForm({
+    id_mapel: "",
+    kode_mapel: "",
+    mapel: "",
 });
 
-watch(
-    () => studentsUrl.value,
-    (updatedStudentsUrl) => {
-        router.visit(updatedStudentsUrl, {
-            replace: true,
-            preserveState: true,
-            preserveScroll: true,
+const openModal = (type, mapel = {}) => {
+    showModal.value = true;
+    if (type === "add") {
+        modalTitle.value = "Tambah Mata Pelajaran";
+        modalButton.value = "Simpan";
+        mapelForm.value = {
+            id_mapel: "",
+            kode_mapel: `MP-${Date.now()}`,
+            mapel: "",
+        };
+    } else if (type === "edit") {
+        modalTitle.value = "Edit Mapel";
+        modalButton.value = "Edit";
+        mapelForm.value = { ...mapel };
+    }
+    form.reset(mapelForm.value);
+};
+
+const closeModal = () => {
+    showModal.value = false;
+};
+
+const saveMapel = () => {
+    if (modalButton.value === "Simpan") {
+        form.post(route("matapelajaran.store"), {
+            onSuccess: () => {
+                showModal.value = false;
+                router.reload();
+            },
         });
-    }
-);
-
-/**
- watch(
-    () => search.value,
-    (value) => {
-        if (value) {
-            pageNumber.value = 1;
-        }
-    }
-)
- */
-
-const deleteForm = useForm({});
-
-const deleteStudent = (id) => {
-    if (confirm("Are you sure you want to delete this student?")) {
-        deleteForm.delete(route("students.destroy", id), {
-            preserveScroll: true,
+    } else if (modalButton.value === "Edit") {
+        form.put(route("master_mapel.update", mapelForm.value.id_mapel), {
+            onSuccess: () => {
+                showModal.value = false;
+                router.reload();
+            },
         });
     }
 };
 
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
 const updatedPageNumber = (link) => {
-    //console.log(link.url);
-    pageNumber.value = link.url.split("=")[1];
+    const pageNumber = new URLSearchParams(link.url.split("?")[1]).get("page");
+    currentPage.value = parseInt(pageNumber, 10);
 };
 
 onMounted(() => {
@@ -205,151 +217,188 @@ onMounted(() => {
             </div>
         </nav>
 
+        <!-- start1 -->
+
         <main class="p-4 md:ml-64 h-auto pt-20">
             <div class="container mx-auto p-4">
-                <h1 class="text-2xl font-bold mb-4">
-                    Riwayat Penilaian Harian
-                </h1>
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <div class="flex mb-4">
-                        <input type="date" class="border p-2 rounded mr-2" />
-                        <select class="border p-2 rounded mr-2">
-                            <option>--Pilih Tema--</option>
-                            <option>Tema 1</option>
-                            <option>Tema 2</option>
-                        </select>
-                        <input
-                            type="text"
-                            placeholder="Kegiatan ..."
-                            class="border p-2 rounded mr-2"
-                        />
-                        <select class="border p-2 rounded">
-                            <option>--Pilih Indo--</option>
-                            <option>Indo 1</option>
-                            <option>Indo 2</option>
-                        </select>
+                <div class="px-4 py-4 sm:px-6 lg:px-8">
+                    <div class="sm:flex sm:items-center mb-10">
+                        <div class="sm:flex-auto">
+                            <h1 class="text-3xl font-semibold text-gray-900">
+                                Mata Pelajaran
+                            </h1>
+                            <p class="mt-2 text-sm text-gray-700">
+                                Daftar Mata Pelajaran
+                            </p>
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                            <div class="card-title">
+                                <button
+                                    @click="openModal('add')"
+                                    class="inline-flex items-center justify-center rounded-md border border-transparent bg-[#8ec3b3] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                >
+                                    <i class="fa fa-plus"></i>
+                                    Tambah Mata Pelajaran
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <table class="min-w-full bg-white border-collapse">
-                        <thead>
-                            <tr>
-                                <th class="border p-2">No</th>
-                                <th class="border p-2">Nama</th>
-                                <th class="border p-2">BB</th>
-                                <th class="border p-2">MB</th>
-                                <th class="border p-2">BSH</th>
-                                <th class="border p-2">BSB</th>
-                                <th class="border p-2">Ket</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border p-2 text-center">1</td>
-                                <td class="border p-2">*********</td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bb1" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="mb1" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsh1" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsb1" />
-                                </td>
-                                <td class="border p-2">
-                                    <input
-                                        type="text"
-                                        class="border p-2 w-full"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2 text-center">2</td>
-                                <td class="border p-2">*********</td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bb2" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="mb2" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsh2" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsb2" />
-                                </td>
-                                <td class="border p-2">
-                                    <input
-                                        type="text"
-                                        class="border p-2 w-full"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border p-2 text-center">3</td>
-                                <td class="border p-2">*********</td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bb3" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="mb3" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsh3" />
-                                </td>
-                                <td class="border p-2 text-center">
-                                    <input type="radio" name="bsb3" />
-                                </td>
-                                <td class="border p-2">
-                                    <input
-                                        type="text"
-                                        class="border p-2 w-full"
-                                    />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="mt-4">
-                        <span>Showing 1 to * of * entries</span>
-                    </div>
-                    <div class="mt-4">
-                        <h2 class="text-lg font-semibold">
-                            Keterangan Singkatan
-                        </h2>
-                        <ul class="list-disc ml-6">
-                            <li>
-                                <strong>BB (Belum Berkembang)</strong>: Siswa
-                                masih berada pada tahap awal atau belum
-                                menunjukkan pemahaman atau kemampuan yang
-                                memadai terhadap materi yang diajarkan.
-                            </li>
-                            <li>
-                                <strong>MB (Mulai Berkembang)</strong>: Siswa
-                                mulai menunjukkan pemahaman dan kemampuan
-                                terhadap materi, namun masih belum konsisten.
-                                Siswa masih memerlukan bimbingan dan latihan
-                                lebih lanjut.
-                            </li>
-                            <li>
-                                <strong>BSH (Berkembang Sesuai Harapan)</strong
-                                >: Siswa telah mencapai tingkat pemahaman dan
-                                kemampuan yang sesuai dengan harapan atau
-                                standar yang ditetapkan. Siswa menunjukkan
-                                kinerja yang baik dan konsisten.
-                            </li>
-                            <li>
-                                <strong>BSB (Berkembang Sangat Baik)</strong>:
-                                Siswa telah melampaui harapan atau standar yang
-                                ditetapkan. Siswa menunjukkan kinerja yang
-                                sangat baik dan memiliki pemahaman yang mendalam
-                                terhadap materi.
-                            </li>
-                        </ul>
+
+                    <div class="page-inner">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table
+                                                class="table table-hover table-striped"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Kode</th>
+                                                        <th>
+                                                            Nama Mata Pelajaran
+                                                        </th>
+                                                        <th>Opsi</th>
+                                                    </tr>
+                                                </thead>
+                                            <tbody
+                                                    class="divide-y divide-gray-200 bg-white"
+                                                >
+                                                    <tr
+                                                        v-for="mapel in props
+                                                            .master_mapel.data"
+                                                        :key="mapel.id_mapel"
+                                                    >
+                                                        <td
+                                                            class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                                                        >
+                                                            {{ mapel.id_mapel }}
+                                                        </td>
+                                                        <td
+                                                            class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                                                        >
+                                                            {{
+                                                                mapel.kode_mapel
+                                                            }}
+                                                        </td>
+                                                        <td
+                                                            class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                                        >
+                                                            {{ mapel.mapel }}
+                                                        </td>
+                                                        <td
+                                                            class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                                                        >
+                                                            <Link
+                                                                href="#"
+                                                                @click.prevent="
+                                                                    openModal(
+                                                                        'edit',
+                                                                        mapel
+                                                                    )
+                                                                "
+                                                                class="text-indigo-600 hover:text-indigo-900"
+                                                            >
+                                                                Edit
+                                                            </Link>
+                                                            <button
+                                                                @click="
+                                                                    deleteMapel(
+                                                                        mapel.id_mapel
+                                                                    )
+                                                                "
+                                                                class="ml-2 text-indigo-600 hover:text-indigo-900"
+                                                            >
+                                                                Hapus
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <Pagination
+                                            :data="master_mapel"
+                                            :updatedPageNumber="
+                                                updatedPageNumber
+                                            "
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add/Edit Modal -->
+                        <div
+                            v-if="showModal"
+                            class="modal fade show"
+                            style="display: block"
+                            tabindex="-1"
+                            role="dialog"
+                        >
+                            <div class="modal-dialog h-screen mt-20">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">
+                                            {{ modalTitle }}
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            @click="closeModal"
+                                            aria-label="Close"
+                                        >
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form @submit.prevent="saveMapel">
+                                            <div class="form-group">
+                                                <label
+                                                    >Kode Mata Pelajaran</label
+                                                >
+                                                <input
+                                                    v-model="
+                                                        mapelForm.kode_mapel
+                                                    "
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="Kode Mata Pelajaran"
+                                                />
+                                                <!-- readable before-->
+                                            </div>
+                                            <div class="form-group">
+                                                <label
+                                                    >Nama Mata Pelajaran</label
+                                                >
+                                                <input
+                                                    v-model="mapelForm.mapel"
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="Nama Mata Pelajaran .."
+                                                />
+                                            </div>
+                                            <div class="form-group">
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary bg-[#8ec3b3]"
+                                                >
+                                                    {{ modalButton }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
+
+        <!-- end1-->
+
         <!-- Sidebar -->
         <aside
             class="fixed top-0 left-0 z-40 w-60 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-900"
@@ -610,6 +659,4 @@ onMounted(() => {
             </div>
         </aside>
     </div>
-
-    <!-- -----  -->
 </template>

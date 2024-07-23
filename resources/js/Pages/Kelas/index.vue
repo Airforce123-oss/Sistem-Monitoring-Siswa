@@ -6,11 +6,71 @@ import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { onMounted, ref, watch, computed } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
-defineProps({
-    students: {
+// Deklarasikan state dengan ref
+const showModal = ref(false);
+const modalTitle = ref("");
+const modalButton = ref("");
+const kelasForm = ref({
+    id_kelas: "",
+    nama_kelas: "",
+    kode_kelas: "",
+});
+
+const props = defineProps({
+    classes_for_student: {
         type: Object,
+        required: true,
     },
 });
+
+const form = useForm({
+    id_kelas: "",
+    kode_kelas: "",
+    classes: "",
+});
+
+const openModal = (type, classes = {}) => {
+    showModal.value = true;
+    if (type === "add") {
+        modalTitle.value = "Tambah Kelas";
+        modalButton.value = "Simpan";
+        kelasForm.value = {
+            id_kelas: "",
+            nama_kelas: "",
+            kode_kelas: `MK-${Date.now()}`,
+        };
+    } else if (type === "edit") {
+        modalTitle.value = "Edit Kelas";
+        modalButton.value = "Edit";
+        kelasForm.value = { ...classes };
+    }
+    form.reset(kelasForm.value);
+};
+
+const closeModal = () => {
+    showModal.value = false;
+};
+
+const saveKelas = () => {
+    if (modalButton.value === "Simpan") {
+        form.post(route("kelas.store"), {
+            onSuccess: () => {
+                showModal.value = false;
+                router.reload();
+            },
+        });
+    } else if (modalButton.value === "Edit") {
+        form.put(
+            route("classes_for_student.update", mapelForm.value.id_mapel),
+            {
+                onSuccess: () => {
+                    showModal.value = false;
+                    router.reload();
+                },
+            }
+        );
+    }
+};
 
 let pageNumber = ref(1),
     searchTerm = ref(usePage().props.search ?? "");
@@ -26,28 +86,6 @@ let studentsUrl = computed(() => {
 
     return url;
 });
-
-watch(
-    () => studentsUrl.value,
-    (updatedStudentsUrl) => {
-        router.visit(updatedStudentsUrl, {
-            replace: true,
-            preserveState: true,
-            preserveScroll: true,
-        });
-    }
-);
-
-/**
- watch(
-    () => search.value,
-    (value) => {
-        if (value) {
-            pageNumber.value = 1;
-        }
-    }
-)
- */
 
 const deleteForm = useForm({});
 
@@ -225,12 +263,15 @@ onMounted(() => {
                             </div>
 
                             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                                <Link
-                                    :href="route('kelas.create')"
-                                    class="inline-flex items-center justify-center rounded-md border border-transparent bg-[#8ec3b3] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                >
-                                    Tambah Kelas
-                                </Link>
+                                <div class="card-title">
+                                    <button
+                                        @click="openModal('add')"
+                                        class="inline-flex items-center justify-center rounded-md border border-transparent bg-[#8ec3b3] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                    >
+                                        <i class="fa fa-plus"></i>
+                                        Tambah Kelas
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div
@@ -254,99 +295,138 @@ onMounted(() => {
                                 />
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="mt-8 flex flex-col mr-20">
-                            <div
-                                class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8"
-                            >
-                                <div
-                                    class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
-                                >
-                                    <div
-                                        class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg relative"
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nama Kelas</th>
+                                            <th>Kode Kelas</th>
+                                            <th>Opsi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="divide-y divide-gray-200 bg-white"
                                     >
-                                        <table class="min-w-full bg-white">
-                                            <thead class="bg-gray-50">
-                                                <tr>
-                                                    <th
-                                                        scope="col"
-                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                                    >
-                                                        ID
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                                    >
-                                                        Nama Kelas
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                                    >
-                                                        Kode Kelas
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                                    >
-                                                        Dibuat Pada
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        class="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                                                    />
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="divide-y divide-gray-200 bg-white"
+                                        <tr
+                                            v-for="classes in props
+                                                .classes_for_student.data"
+                                            :key="classes.id_kelas"
+                                        >
+                                            <td
+                                                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                                             >
-                                                <!-- v-for="student in students.data" :key="student.id"-->
-                                                <tr>
-                                                    <td
-                                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                                                    ></td>
-                                                    <td
-                                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                                                    ></td>
-                                                    <td
-                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                                                    ></td>
-                                                    <td
-                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                                                    ></td>
-                                                    <td
-                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                                                    ></td>
-                                                    <td
-                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                                                    ></td>
-
-                                                    <td
-                                                        class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                                                    >
-                                                        <Link
-                                                            class="text-indigo-600 hover:text-indigo-900"
-                                                        >
-                                                            Edit
-                                                        </Link>
-                                                        <button
-                                                            @click="
-                                                                deleteStudent(
-                                                                    student.id
-                                                                )
-                                                            "
-                                                            class="ml-2 text-indigo-600 hover:text-indigo-900"
-                                                        >
-                                                            Hapus
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                                {{ classes.id_kelas }}
+                                            </td>
+                                            <td
+                                                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                                            >
+                                                {{ classes.kode_kelas }}
+                                            </td>
+                                            <td
+                                                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                            >
+                                                {{ classes.nama_kelas }}
+                                            </td>
+                                            <td
+                                                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                                            >
+                                                <Link
+                                                    href="#"
+                                                    @click.prevent="
+                                                        openModal(
+                                                            'edit',
+                                                            classes
+                                                        )
+                                                    "
+                                                    class="text-indigo-600 hover:text-indigo-900"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    @click="
+                                                        deleteMapel(
+                                                            classes.id_kelas
+                                                        )
+                                                    "
+                                                    class="ml-2 text-indigo-600 hover:text-indigo-900"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+                            <Pagination
+                                :data="classes_for_student"
+                                :updatedPageNumber="updatedPageNumber"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add/Edit Modal -->
+            <div
+                v-if="showModal"
+                class="modal fade show"
+                style="display: block"
+                tabindex="-1"
+                role="dialog"
+            >
+                <div class="modal-dialog h-screen mt-20">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">
+                                {{ modalTitle }}
+                            </h4>
+                            <button
+                                type="button"
+                                class="close"
+                                @click="closeModal"
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form @submit.prevent="saveKelas">
+                                <div class="form-group">
+                                    <label>Kode Mata Pelajaran</label>
+                                    <input
+                                        v-model="kelasForm.kode_kelas"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Kode Kelas...."
+                                    />
+                                    <!-- readable before-->
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Mata Pelajaran</label>
+                                    <input
+                                        v-model="kelasForm.classes"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Nama Mata Kelas .."
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary bg-[#8ec3b3]"
+                                    >
+                                        {{ modalButton }}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -417,6 +497,7 @@ onMounted(() => {
                             <span class="ml-3">Beranda</span>
                         </a>
                     </li>
+
                     <li>
                         <button
                             type="button"
@@ -460,13 +541,6 @@ onMounted(() => {
                                     href="students"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >Data Induk Siswa</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Absensi Siswa</a
                                 >
                             </li>
                         </ul>
@@ -531,7 +605,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -548,7 +622,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -564,19 +638,21 @@ onMounted(() => {
                                 ></path>
                             </svg>
                         </button>
+
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="tugas"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
                         <a
                             href="penilaian"
