@@ -14,6 +14,14 @@ use App\Models\Section;
 
 class studentController extends Controller
 {
+    public function absensiSiswa() {
+        return inertia('Students/absensiSiswa');
+    }
+
+    public function dashboardStudent() {
+        return inertia('Students/Dashboard');
+    }
+
     public function index(Request $request)
     {
 

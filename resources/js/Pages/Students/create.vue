@@ -187,7 +187,7 @@ onMounted(() => {
         </nav>
         <!-- start1 -->
         <main class="p-4 md:ml-64 h-auto pt-20">
-            <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8 mt-10">
                 <!--max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 -->
                 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
                     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">

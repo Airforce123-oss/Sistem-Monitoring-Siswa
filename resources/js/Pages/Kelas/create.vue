@@ -18,9 +18,7 @@ let sections = ref([]); // Pastikan sections adalah array untuk menyimpan data b
 
 const form = useForm({
     name: "",
-    email: "",
     class_id: "",
-    section_id: "",
 });
 
 watch(
@@ -186,146 +184,15 @@ onMounted(() => {
             </div>
         </nav>
         <!-- start1 -->
-        <main class="p-4 md:ml-64 h-auto pt-20">
-            <div class="page-wrapper">
-                <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h3 class="page-title">Add Department</h3>
-                                <ul class="breadcrumb">
-                                    <li class="breadcrumb-item">
-                                        <a href="departments.html"
-                                            >Department</a
-                                        >
-                                    </li>
-                                    <li class="breadcrumb-item active">
-                                        Add Department
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <form
-                                        action="{{ route('department/save') }}"
-                                        method="POST"
-                                    >
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h5 class="form-title">
-                                                    <span
-                                                        >Department
-                                                        Details</span
-                                                    >
-                                                </h5>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >Department Name
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="department_name"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >Head of Department
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="head_of_department"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms calendar-icon"
-                                                >
-                                                    <label
-                                                        >Department Start Date
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        class="form-control datetimepicker"
-                                                        type="text"
-                                                        name="department_start_date"
-                                                        placeholder="DD-MM-YYYY"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >No of Students
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="no_of_students"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="student-submit">
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-primary"
-                                                    >
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <!-- end1-->
+ 
 
         <!--start2-->
 
-        <main class="p-4 md:ml-64 h-auto pt-20">
+        <main class="p-4 md:ml-64 h-auto pt-30">
             <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
                 <!--max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 -->
                 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
-                    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
+                    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12 mt-10">
                         <form @submit.prevent="createStudent">
                             <div
                                 class="shadow sm:rounded-md sm:overflow-hidden"
@@ -350,7 +217,7 @@ onMounted(() => {
                                             <label
                                                 for="name"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Nama</label
+                                                >Nama Kelas</label
                                             >
                                             <input
                                                 v-model="form.name"
@@ -367,38 +234,28 @@ onMounted(() => {
                                                 :message="form.errors.name"
                                             />
                                         </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="email"
+                                                for="name"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Alamat Email</label
+                                                >Kode Kelas</label
                                             >
                                             <input
-                                                v-model="form.email"
-                                                type="email"
-                                                id="email"
-                                                autocomplete="email"
+                                               
+                                                type="text"
+                                                id="name"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                :class="{
-                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.email,
-                                                }"
-                                            />
-                                            <InputError
-                                                :message="
-                                                    form.errors
-                                                        .currents_password
+                                                :class="
+                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300'
                                                 "
-                                                class="mt-2"
                                             />
                                             <InputError
                                                 class="mt-2"
-                                                :message="form.errors.email"
+                                                :message="form.errors.name"
                                             />
                                         </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
+                                    <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="class_id"
                                                 class="block text-sm font-medium text-gray-700"
@@ -421,47 +278,12 @@ onMounted(() => {
                                                 :message="form.errors.class_id"
                                             />
                                         </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label
-                                                for="section_id"
-                                                class="block text-sm font-medium text-gray-700"
-                                                >Section</label
-                                            >
-                                            <select
-                                                v-model="form.section_id"
-                                                id="section_id"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                :class="{
-                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.section_id,
-                                                }"
-                                            >
-                                                <option value="">
-                                                    Pilih Section
-                                                </option>
-                                                <option
-                                                    v-for="section in sections"
-                                                    :key="section.id"
-                                                    :value="section.id"
-                                                >
-                                                    {{ section.name }}
-                                                </option>
-                                            </select>
-                                            <InputError
-                                                class="mt-2"
-                                                :message="
-                                                    form.errors.section_id
-                                                "
-                                            />
-                                        </div>
-                                    </div>
                                 </div>
                                 <div
                                     class="px-4 py-3 bg-gray-50 text-right sm:px-6"
                                 >
                                     <Link
-                                        :href="route('students.index')"
+                                        :href="route('kelas.index')"
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
                                     >
                                         Batal
@@ -481,7 +303,6 @@ onMounted(() => {
         </main>
 
         <!--end2-->
-
 
         <!-- Sidebar -->
         <aside

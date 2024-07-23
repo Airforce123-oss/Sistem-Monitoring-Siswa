@@ -5,12 +5,30 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 const form = useForm({
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
+    role_type: "",
+});
+
+const roleTypes = ref([]);
+
+const fetchRoleTypes = async () => {
+    try {
+        const response = await axios.get("/role-types");
+        roleTypes.value = response.data;
+    } catch (error) {
+        console.error("Error fetching role types:", error);
+    }
+};
+
+onMounted(() => {
+    fetchRoleTypes();
 });
 
 const submit = () => {
@@ -21,8 +39,6 @@ const submit = () => {
 </script>
 
 <template>
-    <!-- versi ada gambarnya -->
-
     <div class="bg-[#9CF09C] flex items-center justify-center min-h-screen">
         <div class="bg-white shadow-md rounded-lg flex max-w-4xl w-full">
             <div
@@ -61,13 +77,10 @@ const submit = () => {
                             placeholder="Masukkan Nama Lengkap"
                         />
                         <InputError class="mt-2" :message="form.errors.name" />
-                        <span class="profile-views"
-                            ><i class="fas fa-user-circle"></i
-                        ></span>
                     </div>
 
                     <div class="mb-4">
-                        <inputLabel
+                        <InputLabel
                             for="email"
                             class="block text-gray-700 mb-2"
                             value="Email"
@@ -78,38 +91,38 @@ const submit = () => {
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             v-model="form.email"
                             required
-                            autofocus
                             autocomplete="username"
                             placeholder="Masukkan Email"
                         />
-                        <!-- mt-1 block w-full -->
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
-                    <!--
-                          <div class="mb-4">
+                    <div class="mb-4">
                         <InputLabel
-                            for="password"
+                            for="role_type"
                             class="block text-gray-700 mb-2"
-                            value="Nama Role"
+                            value="Role Type"
                         />
                         <select
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 form-control select @error('role_name') is-invalid @enderror"
-                            name="role_name"
-                            id="role_name"
+                            id="role_type"
+                            v-model="form.role_type"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
                         >
-                            <option selected disabled>Role Type</option>
+                            <option value="" disabled>Pilih Role Type</option>
+                            <option
+                                v-for="role in roleTypes"
+                                :key="role.id"
+                                :value="role.role_type"
+                            >
+                                {{ role.role_type }}
+                            </option>
                         </select>
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        < !-- mt-1 block w-full -- >
                         <InputError
                             class="mt-2"
-                            :message="form.errors.password"
+                            :message="form.errors.role_type"
                         />
                     </div>
-                    -->
 
                     <div class="mb-4">
                         <InputLabel
@@ -126,7 +139,6 @@ const submit = () => {
                             autocomplete="current-password"
                             placeholder="Masukkan Password"
                         />
-                        <!-- mt-1 block w-full -->
                         <InputError
                             class="mt-2"
                             :message="form.errors.password"
@@ -135,12 +147,12 @@ const submit = () => {
 
                     <div class="mb-4">
                         <InputLabel
-                            for="password"
-                            class="block text-gray-700 mb-2s"
+                            for="password_confirmation"
+                            class="block text-gray-700 mb-2"
                             value="Konfirmasi Password"
                         />
                         <TextInput
-                            id="password"
+                            id="password_confirmation"
                             type="password"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             v-model="form.password_confirmation"
@@ -148,7 +160,6 @@ const submit = () => {
                             autocomplete="current-password"
                             placeholder="Masukkan Password"
                         />
-                        <!-- mt-1 block w-full -->
                         <InputError
                             class="mt-2"
                             :message="form.errors.password_confirmation"
@@ -156,14 +167,6 @@ const submit = () => {
                     </div>
 
                     <div class="flex items-center justify-between mb-6">
-                        <label class="flex items-center">
-                            <Checkbox
-                                name="remember"
-                                v-model:checked="form.remember"
-                                class="form-checkbox text-blue-500"
-                            />
-                            <span class="ml-2 text-gray-700">Remember me</span>
-                        </label>
                         <a href="#" class="text-sm text-blue-500"
                             >Forgot Password?</a
                         >
