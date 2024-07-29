@@ -16,7 +16,7 @@ class ReligionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name, // Pastikan kolom nama gender disertakan
+            'name' => $this->name,
         ];
     }
 }

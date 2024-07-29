@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Mapel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Api\ReligionController;
 
 /*
 |--------------------------------------------------------------------------

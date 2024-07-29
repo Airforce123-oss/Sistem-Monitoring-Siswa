@@ -52,7 +52,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class);
     Route::resource('kelas', ClassController::class);
     Route::get('/api/sections', [StudentController::class, 'getSections']);
-    Route::get('/api/students', [studentController::class, 'getGenders']);
+    Route::get('/api/religions', [StudentController::class, 'getReligion']);
+    Route::get('/api/students', [studentController::class, 'getGender']);
+    Route::get('/api/genders', [studentController::class, 'getGender']);
+    Route::get('/api/no_induks', [studentController::class, 'getNoInduk']);
+    //getGender getReligion getNoInduk
 
     Route::resource('/Profile', ProfileController::class);
     Route::resource('/tugas', TugasController::class);

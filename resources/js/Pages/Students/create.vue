@@ -1,49 +1,37 @@
 <script setup>
 import { onMounted, watch, ref } from "vue";
 import axios from "axios";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage, Head, Link } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
-import { Head, Link } from "@inertiajs/vue3";
-import { type } from "jquery";
 
+// Deklarasi props terlebih dahulu
 const { props } = usePage();
-
-defineProps({
-    classes: {
-        type: Object,
-    },
-    genders: {
-        type: Object,
-    },
-    no_induks: {
-        type: Object,
-    },
-    religions: {
-        type: Object,
-    },
-});
-
-// Pastikan props.auth dan props.auth.user ada sebelum digunakan
-const form1 = useForm({
-    name: props.auth?.user?.name || "",
-    email: props.auth?.user?.email || "",
-    role_type: props.auth?.user?.role_type || "", // Berikan nilai default jika props.auth.user tidak ada
-});
 
 const form = useForm({
     name: "",
+    name1: props.auth?.user?.name || "",
+    email: props.auth?.user?.email || "",
+    role_type: props.auth?.user?.role_type || "",
+    no_induk: "",
     email: "",
-    class_id: "",
-    section_id: "",
     gender_id: "",
-    religion_id: "",
+    class_id: "",
+    religion_id: "", // Default value if props.auth.user is unavailable
 });
 
 const sections = ref([]);
-const classes = ref(props.classes.data); // Assuming classes data is passed as a prop
-const genders = ref(props.genders.data); // Assuming genders data is passed as a prop
-const religions = ref(props.religions.data);
+const classes = ref(props.classes.data || []); // Pastikan data ada
+const genders = ref(props.genders.data || []); // Pastikan data ada
+const religions = ref(props.religions.data || []); // Pastikan data ada
 
+// Mengambil data sections berdasarkan class_id
+const getSections = (class_id) => {
+    axios.get(`/api/sections?class_id=${class_id}`).then((response) => {
+        sections.value = response.data;
+    });
+};
+
+// Watch untuk perubahan pada class_id
 watch(
     () => form.class_id,
     (newValue) => {
@@ -53,14 +41,13 @@ watch(
     }
 );
 
-const getSections = (class_id) => {
-    axios.get(`/api/sections?class_id=${class_id}`).then((response) => {
-        sections.value = response.data;
-    });
-};
-
 const submit = () => {
     form.post(route("students.store"), {
+        onSuccess: () => {
+            console.log("Data berhasil dikirim:", form.data()); // Log data yang berhasil dikirim
+            console.log("Redirecting to students.index...");
+            //window.location.href = route("students.index");
+        },
         preserveScroll: true,
     });
 };
@@ -191,7 +178,7 @@ const submit = () => {
                                 </span>
                                 <span
                                     class="block text-sm text-gray-900 truncate dark:text-white"
-                                    >{{ form1.role_type }}</span
+                                    >{{ form.role_type }}</span
                                 >
                             </div>
                         </div>
@@ -235,7 +222,6 @@ const submit = () => {
                                             siswa
                                         </p>
                                     </div>
-
                                     <div class="grid grid-cols-6 gap-6">
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
@@ -259,7 +245,6 @@ const submit = () => {
                                                 :message="form.errors.no_induk"
                                             />
                                         </div>
-
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="name"
@@ -282,7 +267,6 @@ const submit = () => {
                                                 :message="form.errors.name"
                                             />
                                         </div>
-
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="gender_id"
@@ -314,7 +298,6 @@ const submit = () => {
                                                 :message="form.errors.gender_id"
                                             />
                                         </div>
-
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="class_id"
@@ -373,7 +356,6 @@ const submit = () => {
                                                     {{ item.name }}
                                                 </option>
                                             </select>
-
                                             <InputError
                                                 class="mt-2"
                                                 :message="
@@ -389,9 +371,8 @@ const submit = () => {
                                     <Link
                                         :href="route('students.index')"
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                                        >Batal</Link
                                     >
-                                        Batal
-                                    </Link>
                                     <button
                                         type="submit"
                                         class="bg-[#8ec3b3] border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

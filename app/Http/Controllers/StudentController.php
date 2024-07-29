@@ -39,7 +39,7 @@ class studentController extends Controller
     $this->applySearch($studentQuery, $request->search);
 
     // Pagination
-    $students = $studentQuery->paginate(10)->appends($request->only('search'));
+    $students = $studentQuery->paginate(5)->appends($request->only('search'));
 
     return inertia('Students/index', [
         'students' => StudentResource::collection($students),
@@ -73,14 +73,14 @@ class studentController extends Controller
     {
         $classes = ClassesResource::collection(Classes::all());
         $genders = GenderResource::collection(Gender::all());
-        $religions = ReligionResource::collection(Gender::all());
+        $religions = ReligionResource::collection(Religion::all());
         $no_induks = NoIndukResource::collection(NoInduk::all());
 
         return inertia('Students/create', [
+            'no_induks' => $no_induks,
             'classes' => $classes,
             'genders' => $genders,
             'religions' => $religions,
-            'no_induks' => $no_induks, 
         ]);
     }
 
@@ -93,12 +93,14 @@ class studentController extends Controller
     public function edit(Student $student)
     {
         $classes = ClassesResource::collection(Classes::all());
+        $religions = ReligionResource::collection(Religion::all());
 
 
 
         return inertia('Students/edit', [
             'student' => StudentResource::make($student),
             'classes' => $classes,
+            'religions' => $religions,
           
         ]);
     }

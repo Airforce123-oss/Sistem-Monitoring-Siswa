@@ -55,17 +55,6 @@ watch(
     }
 );
 
-/**
- watch(
-    () => search.value,
-    (value) => {
-        if (value) {
-            pageNumber.value = 1;
-        }
-    }
-)
- */
-
 const deleteForm = useForm({});
 
 const deleteStudent = (id) => {
@@ -91,6 +80,8 @@ const updatedPageNumber = (link) => {
 
 onMounted(() => {
     initFlowbite();
+    console.log("Props received:", props);
+    console.log("Students data:", props.students);
 });
 </script>
 
