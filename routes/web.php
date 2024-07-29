@@ -6,6 +6,7 @@ use App\Http\Controllers\ClassController;
 use App\Http\Controllers\PenilaianController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -16,6 +17,21 @@ use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\FileUploadController;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        $roleType = Auth::user()->role_type;
+
+        switch ($roleType) {
+            case 'Admin':
+                return redirect()->route('admin.dashboard');
+            case 'Teachers':
+                return redirect()->route('teacher.dashboard');
+            case 'Student':
+                return redirect()->route('student.dashboard');
+            default:
+                return redirect()->route('dashboard');
+        }
+    }
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -36,6 +52,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class);
     Route::resource('kelas', ClassController::class);
     Route::get('/api/sections', [StudentController::class, 'getSections']);
+    Route::get('/api/students', [studentController::class, 'getGenders']);
+
     Route::resource('/Profile', ProfileController::class);
     Route::resource('/tugas', TugasController::class);
     Route::get('/tugasTambah', [TugasController::class, 'tambahTugas'])->name('tugas.tambah');
@@ -71,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/absensiSiswa', [StudentController::class, 'absensiSiswa'])->name('student.absensiSiswa');
 
     Route::get('/teachersDashboard', [TeacherController::class, 'dashboardTeacher'])->name('teacher.dashboard');
-    Route::get('/bukuPenghubung', [TeacherController::class, 'bukuPenghubung'])->name('teacher.bukuPenghubung');
+    Route::get('/bukuPenghubungDashboard', [TeacherController::class, 'bukuPenghubungDashboard'])->name('teacher.bukuPenghubung');
     Route::resource('teachers', TeacherController::class);
 });
 

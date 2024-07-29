@@ -63,8 +63,8 @@ class ClassController extends Controller
 
     public function update(StoreClassesRequest $request, $id)
     {
-        $classes = ClassesForStudent::findOrFail($id);
-        $classes->update($request->validated());
+        $classForStudent = ClassesForStudent::findOrFail($id);
+        $classForStudent->update($request->validated());
         return redirect()->route('matapelajaran.index');
     }
 

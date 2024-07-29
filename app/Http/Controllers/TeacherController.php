@@ -20,8 +20,8 @@ class TeacherController extends Controller
         return inertia('Teachers/Dashboard');
     }
 
-    public function bukuPenghubung() {
-        return inertia('Teachers/bukuPenghubung');
+    public function bukuPenghubungDashboard() {
+        return inertia('Teachers/BukuPenghubung/index');
     }
     public function index(Request $request)
     {

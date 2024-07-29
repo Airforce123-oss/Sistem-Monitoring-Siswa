@@ -317,24 +317,24 @@ onMounted(() => {
                                         class="divide-y divide-gray-200 bg-white"
                                     >
                                         <tr
-                                            v-for="classes in props
+                                            v-for="classForStudent in props
                                                 .classes_for_student.data"
-                                            :key="classes.id_kelas"
+                                            :key="classForStudent.id_kelas"
                                         >
                                             <td
                                                 class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                                             >
-                                                {{ classes.id_kelas }}
+                                                {{ classForStudent.id_kelas }}
                                             </td>
                                             <td
                                                 class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                                             >
-                                                {{ classes.kode_kelas }}
+                                                {{ classForStudent.kode_kelas }}
                                             </td>
                                             <td
                                                 class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                             >
-                                                {{ classes.nama_kelas }}
+                                                {{ classForStudent.nama_kelas }}
                                             </td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
@@ -344,7 +344,7 @@ onMounted(() => {
                                                     @click.prevent="
                                                         openModal(
                                                             'edit',
-                                                            classes
+                                                            classForStudent
                                                         )
                                                     "
                                                     class="text-indigo-600 hover:text-indigo-900"
@@ -354,7 +354,7 @@ onMounted(() => {
                                                 <button
                                                     @click="
                                                         deleteMapel(
-                                                            classes.id_kelas
+                                                            classForStudent.id_kelas
                                                         )
                                                     "
                                                     class="ml-2 text-indigo-600 hover:text-indigo-900"

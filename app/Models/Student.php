@@ -7,22 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'name',
-        'email',
-        'class_id',
-        'section_id'
+        'name', 'gender_id', 'class_id', 'religion_id', 'no_induk_id'
     ];
 
-    public function class ()
+    public function noInduk()
+    {
+        return $this->belongsTo(NoInduk::class, 'no_induk_id');
+    }
+
+    public function class()
     {
         return $this->belongsTo(Classes::class, 'class_id');
     }
 
-    public function section()
+    public function gender()
     {
-        return $this->belongsTo(Section::class, 'section_id');
+        return $this->belongsTo(Gender::class, 'gender_id');
     }
+
+    public function religion()
+    {
+        return $this->belongsTo(Religion::class, 'religion_id');
+    }
+
 }

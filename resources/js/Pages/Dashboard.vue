@@ -292,7 +292,7 @@ onMounted(() => {
                         class="output text-center mt-5 text-xl text-[#ffffff]"
                         placeholder=""
                     >
-                        607
+                        509
                     </p>
                 </div>
 
@@ -304,7 +304,7 @@ onMounted(() => {
                         class="output text-center mt-5 text-xl text-[#ffffff]"
                         placeholder=""
                     >
-                        0
+                        16
                     </p>
                 </div>
                 <div
@@ -399,12 +399,14 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-            <p>
+            <!--
+             <p>
                 Catatan: Melihat data siswa, mengelola data siswa, melihat data
                 guru, mengelola data guru, melihat presensi siswa, mengelola
                 presensi siswa, melihat presensi guru mengelola presensi guru,
                 melihat mata pelajaran, mengelola mata pelajaran,
             </p>
+            -->
         </main>
         <!-- Sidebar -->
 

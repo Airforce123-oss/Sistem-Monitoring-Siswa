@@ -9,7 +9,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 defineProps({
-    classes: {
+    classes_for_student: {
         type: Object,
     },
 });

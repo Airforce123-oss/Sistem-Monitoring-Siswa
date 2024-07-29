@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ClassesResource;
+use App\Http\Resources\GenderResource;
 use App\Http\Resources\StudentResource;
+use App\Http\Resources\ReligionResource;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Http\Resources\NoIndukResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Classes;
 use App\Models\Section;
+use App\Models\Religion;
+use App\Models\Gender;
+use App\Models\NoInduk;
+
+
+
 
 class studentController extends Controller
 {
@@ -24,22 +33,33 @@ class studentController extends Controller
 
     public function index(Request $request)
     {
+        $studentQuery = Student::query()->with('noInduk', 'religion', 'gender', 'class');
 
-        $studentQuery = Student::query();
+    // Apply search filter if present
+    $this->applySearch($studentQuery, $request->search);
 
-     
-       // applysearch work
-       $this->applySearch($studentQuery, $request->search);
+    // Pagination
+    $students = $studentQuery->paginate(10)->appends($request->only('search'));
 
-         // Paginasi dengan nomor halaman dan tambahkan parameter pencarian ke link paginasi
-        $students = $studentQuery->paginate(10)->appends($request->only('search'));
-
-        return inertia('Students/index', [
-            'students' => StudentResource::collection($students),
-            'search' => $request->input('search', '')
-        ]);
-
+    return inertia('Students/index', [
+        'students' => StudentResource::collection($students),
+        'search' => $request->input('search', '')
+    ]);
     }
+
+    public function indexApi(Request $request)
+    {
+        $studentQuery = Student::query()->with('noInduk','religion', 'gender', 'class'); // Ensure to load the 'class' relation as well
+    
+        // Apply search filter if present
+        $this->applySearch($studentQuery, $request->search);
+    
+        // Pagination
+        $students = $studentQuery->paginate(2)->appends($request->only('search'));
+    
+        return response()->json($students);
+    }
+    
 
     protected function applySearch(Builder $query, $search)
     {
@@ -52,11 +72,18 @@ class studentController extends Controller
     public function create()
     {
         $classes = ClassesResource::collection(Classes::all());
+        $genders = GenderResource::collection(Gender::all());
+        $religions = ReligionResource::collection(Gender::all());
+        $no_induks = NoIndukResource::collection(NoInduk::all());
 
         return inertia('Students/create', [
             'classes' => $classes,
+            'genders' => $genders,
+            'religions' => $religions,
+            'no_induks' => $no_induks, 
         ]);
     }
+
     public function store(StoreStudentRequest $request)
     {
         Student::create($request->validated());
@@ -66,6 +93,8 @@ class studentController extends Controller
     public function edit(Student $student)
     {
         $classes = ClassesResource::collection(Classes::all());
+
+
 
         return inertia('Students/edit', [
             'student' => StudentResource::make($student),
@@ -97,6 +126,45 @@ class studentController extends Controller
 
         return response()->json($sections);
     }
+
+    public function getGender(Request $request)
+    {
+        $genderId = $request->query('gender_id');
+        if (!$genderId) {
+            return response()->json(['error' => 'Gender ID is required'], 400);
+        }
+
+        $genders = Gender::where('class_id', $genderId)->get();
+
+        return response()->json($genders);
+    }
+
+    public function getReligion(Request $request)
+    {
+        $religionId = $request->query('religion_id');
+        if (!$religionId) {
+            return response()->json(['error' => 'Religion ID is required'], 400);
+        }
+
+        $religions = Religion::where('class_id', $religionId)->get();
+
+        return response()->json($religions);
+    }
+
+    public function getNoInduk(Request $request)
+    {
+        $classId = $request->query('class_id');
+    
+        if (!$classId) {
+            return response()->json(['error' => 'Class ID is required'], 400);
+        }
+    
+        $noInduks = NoInduk::where('class_id', $classId)->get();
+    
+        return response()->json($noInduks);
+    }
+    
+
     public function show($id)
     {
         $student = Student::find($id);

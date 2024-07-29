@@ -1,141 +1,96 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { initFlowbite } from "flowbite";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import VueApexCharts from "vue-apexcharts";
 import ApexCharts from "apexcharts";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
 import $ from "jquery";
-//import "@/assets/plugins/jquery.simple-calendar.js";
-//import "@assets/js/bootstrap-datetimepicker.min.js";
-//import "@assets/plugins/simple-calendar/jquery.simple-calendar.js";
-import "@assets/plugins/simple-calendar/jquery.simple-calendar.js";
-import "@assets/plugins/simple-calendar/simple-calendar.css";
 
-const userName = ref("");
-const { props } = usePage();
-const form = useForm({
-    name: props.auth.user.name,
-    email: props.auth.user.email,
-    role_type: props.auth.user.role_type,
+const entriesToShow = ref(10);
+const searchQuery = ref("");
+const currentPage = ref(1);
+
+const entries = ref([
+    {
+        id: 1,
+        dibuatOleh: "Guru: Basuki Dwicahyono, M.Pd.I",
+        informasi:
+            "Saya ingin menyampaikan tentang perkembangan akademik anak Anda...",
+        dibacaGuru: true,
+        dibacaWali: true,
+    },
+    {
+        id: 2,
+        dibuatOleh: "Guru: Basuki Dwicahyono, M.Pd.I",
+        informasi:
+            "Selamat siang, wali siswa! Anak Anda sangat antusias dalam kegiatan...",
+        dibacaGuru: true,
+        dibacaWali: true,
+    },
+    {
+        id: 3,
+        dibuatOleh: "Guru: Basuki Dwicahyono, M.Pd.I",
+        informasi:
+            "Selamat liburan! Semoga Anda dan keluarga menikmati waktu bersama...",
+        dibacaGuru: true,
+        dibacaWali: true,
+    },
+    {
+        id: 4,
+        dibuatOleh: "Wali: Hasyim",
+        informasi:
+            "Terima kasih atas apresiasi untuk partisipasi anak saya dalam kelompok...",
+        dibacaGuru: false,
+        dibacaWali: true,
+    },
+    // Add more entries as needed
+]);
+
+const filteredEntries = computed(() => {
+    return entries.value.filter((entry) => {
+        return (
+            entry.dibuatOleh
+                .toLowerCase()
+                .includes(searchQuery.value.toLowerCase()) ||
+            entry.informasi
+                .toLowerCase()
+                .includes(searchQuery.value.toLowerCase())
+        );
+    });
 });
+
+const markAsRead = (entry) => {
+    entry.dibacaWali = true;
+};
+
+const deleteEntry = (entry) => {
+    entries.value = entries.value.filter((e) => e.id !== entry.id);
+};
+
+const prevPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+};
+
+const nextPage = () => {
+    if (
+        currentPage.value * entriesToShow.value <
+        filteredEntries.value.length
+    ) {
+        currentPage.value++;
+    }
+};
 
 onMounted(() => {
     initFlowbite();
-
-    // Inisialisasi ApexCharts
-    var options = {
-        chart: { height: 350, type: "line", toolbar: { show: false } },
-        dataLabels: { enabled: false },
-        stroke: { curve: "smooth" },
-        series: [
-            {
-                name: "Guru",
-                color: "#3D5EE1",
-                data: [45, 60, 75, 51, 42, 42, 30],
-            },
-            {
-                name: "Siswa",
-                color: "#70C4CF",
-                data: [24, 48, 56, 32, 34, 52, 25],
-            },
-        ],
-        xaxis: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-        },
-    };
-    var chart = new ApexCharts(
-        document.querySelector("#apexcharts-area"),
-        options
-    );
-    chart.render();
-
-    // calendar trial
-    const daysContainer = document.getElementById("days");
-    const monthYearDisplay = document.getElementById("monthYear");
-    const prevButton = document.getElementById("prev");
-    const nextButton = document.getElementById("next");
-
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
-    let currentDate = new Date();
-
-    function renderCalendar() {
-        daysContainer.innerHTML = "";
-        monthYearDisplay.textContent = `${
-            months[currentDate.getMonth()]
-        } ${currentDate.getFullYear()}`;
-
-        const firstDayOfMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            1
-        ).getDay();
-        const daysInMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() + 1,
-            0
-        ).getDate();
-
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            daysContainer.appendChild(document.createElement("div"));
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayElement = document.createElement("div");
-            dayElement.textContent = day;
-            dayElement.classList.add(
-                "flex",
-                "items-center",
-                "justify-center",
-                "w-12",
-                "h-12"
-            );
-
-            if (
-                day === currentDate.getDate() &&
-                currentDate.getMonth() === new Date().getMonth() &&
-                currentDate.getFullYear() === new Date().getFullYear()
-            ) {
-                dayElement.classList.add(
-                    "bg-blue-500",
-                    "text-white",
-                    "rounded-full"
-                );
-            }
-
-            daysContainer.appendChild(dayElement);
-        }
-    }
-
-    prevButton.addEventListener("click", () => {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
-    });
-
-    nextButton.addEventListener("click", () => {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar();
-    });
-
-    renderCalendar();
-    //end calendar trial
 });
 </script>
+
 <template>
-    <div class="antialiased bg-gray-50 dark:bg-gray-900">
+
+<div class="antialiased bg-gray-50 dark:bg-gray-900">
         <nav
             class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
         >
@@ -280,190 +235,156 @@ onMounted(() => {
         <!-- Main -->
 
         <main class="p-7 md:ml-64 h-screen pt-20">
-            <Head title="Dashboard" />
-            <div class="text-2xl col-sm-12 mb-10">
-                <div class="page-sub-header">
-                    <h3 class="page-title">
-                        Selamat Datang {{ $page.props.auth.user.name }}!
-                    </h3>
+            <div class="p-6 bg-white shadow rounded-lg mb-10">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold mb-4">Identitas Siswa</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p><strong>Nama Siswa:</strong> </p>
+                            <p><strong>Nomor Induk Siswa:</strong> </p>
+                            <p><strong>Jenis Kelamin:</strong> </p>
+                        </div>
+                        <div>
+                            <p><strong>Kelas:</strong> </p>
+                            <p><strong>Nama Orang Tua:</strong> </p>
+                            <p><strong>Alamat:</strong> </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 w-screen"
-            >
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
-                    id=""
-                >
-                    <h2 class="text-center">Total Kelas</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        0
-                    </p>
-                </div>
-
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
-                >
-                    <h2 class="text-center">Total Siswa</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        509
-                    </p>
-                </div>
-                <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
-                >
-                    <h2 class="text-center">Total Mata Pelajaran</h2>
-                    <p
-                        class="output text-center mt-5 text-xl text-[#ffffff]"
-                        placeholder=""
-                    >
-                        16
-                    </p>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12 col-lg-16 col-xl-6">
-                    <div class="card flex-fill comman-shadow">
-                        <div class="card-header">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <h5 class="card-title">Today’s Lesson</h5>
-                                </div>
+            <div class="p-6 bg-white shadow rounded-lg">
+                <div class="mb-10 mt-20">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">
+                            Data Buku Penghubung
+                        </h2>
+                        <div class="mb-4 flex justify-between items-center">
+                            <div>
+                                <label for="entries" class="mr-2">Show</label>
+                                <select id="entries" class="border rounded p-1">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </select>
+                                <span class="ml-2">entries</span>
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Search"
+                                    class="border rounded p-1"
+                                />
                             </div>
                         </div>
-                        <div class="dash-circle">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-3">
-                                    <div class="dash-details">
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Class</h5>
-                                                <h4>Electrical Engg</h4>
-                                            </div>
-                                        </div>
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Lessons</h5>
-                                                <h4>5 Lessons</h4>
-                                            </div>
-                                        </div>
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Time</h5>
-                                                <h4>Lessons</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3">
-                                    <div class="dash-details">
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Asignment</h5>
-                                                <h4>5 Asignment</h4>
-                                            </div>
-                                        </div>
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Staff</h5>
-                                                <h4>John Doe</h4>
-                                            </div>
-                                        </div>
-                                        <div class="lesson-activity">
-                                            <div class="lesson-imgs"></div>
-                                            <div class="views-lesson">
-                                                <h5>Lesson Learned</h5>
-                                                <h4>10/50</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    class="col-lg-3 col-md-3 d-flex align-items-center justify-content-center"
-                                >
-                                    <div class="skip-group">
+                        <table class="min-w-full bg-white border">
+                            <thead>
+                                <tr>
+                                    <th class="border px-4 py-2">No</th>
+                                    <th class="border px-4 py-2">
+                                        Dibuat Oleh
+                                    </th>
+                                    <th class="border px-4 py-2">Informasi</th>
+                                    <th class="border px-4 py-2">
+                                        Dibaca Guru
+                                    </th>
+                                    <th class="border px-4 py-2">
+                                        Dibaca Wali
+                                    </th>
+                                    <th class="border px-4 py-2">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border px-4 py-2">1</td>
+                                    <td class="border px-4 py-2">
+                                        Guru: 
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        Saya ingin menyampaikan tentang
+                                        perkembangan akademik anak Anda...
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
                                         <button
-                                            type="submit"
-                                            class="btn btn-info skip-btn"
+                                            class="bg-green-500 text-white px-2 py-1 rounded"
                                         >
-                                            skip
+                                            Tandai Baca
                                         </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2">2</td>
+                                    <td class="border px-4 py-2">
+                                        Guru: 
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        Selamat siang, wali siswa! Anak Anda
+                                        sangat antusias dalam kegiatan...
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
                                         <button
-                                            type="submit"
-                                            class="btn btn-info continue-btn"
+                                            class="bg-green-500 text-white px-2 py-1 rounded"
                                         >
-                                            Continue
+                                            Tandai Baca
                                         </button>
-                                    </div>
-                                </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2">3</td>
+                                    <td class="border px-4 py-2">
+                                        Guru: 
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        Selamat liburan! Semoga Anda dan
+                                        keluarga menikmati waktu bersama...
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        Y
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        <button
+                                            class="bg-green-500 text-white px-2 py-1 rounded"
+                                        >
+                                            Tandai Baca
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 flex justify-between items-center">
+                            <p>Showing 1 to 4 of 4 entries</p>
+                            <div class="flex items-center">
+                                <button class="border rounded px-2 py-1 mx-1">
+                                    Previous
+                                </button>
+                                <button class="border rounded px-2 py-1 mx-1">
+                                    1
+                                </button>
+                                <button class="border rounded px-2 py-1 mx-1">
+                                    Next
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-lg-12 col-xl-12 d-flex">
-                            <div class="card flex-fill comman-shadow">
-                                <div class="card-header">
-                                    <div class="row align-items-center">
-                                        <div class="col-6">
-                                            <h5 class="card-title">
-                                                Learning Activity
-                                            </h5>
-                                        </div>
-                                        <div class="col-6">
-                                            <ul class="chart-list-out">
-                                                <li>
-                                                    <span
-                                                        class="circle-blue"
-                                                    ></span
-                                                    >Teacher
-                                                </li>
-                                                <li>
-                                                    <span
-                                                        class="circle-green"
-                                                    ></span
-                                                    >Student
-                                                </li>
-                                                <li class="star-menus">
-                                                    <a href="javascript:;"
-                                                        ><i
-                                                            class="fas fa-ellipsis-v"
-                                                        ></i
-                                                    ></a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div id="apexcharts-area"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-           
-                    <!-- calendar trial end -->
-                    <p>
-                        catatan: memeriksa tugas submit, melihat data siswa,
-                        buku penghubung, melihat tugas Total Kelas, Total Siswa,
-                        Total Mata Pelajaran
-                    </p>
                 </div>
             </div>
         </main>
         <!-- Sidebar -->
-
         <aside
             class="fixed top-0 left-0 z-40 w-60 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-900"
             aria-label="Sidenav"
@@ -528,7 +449,7 @@ onMounted(() => {
 
                     <li>
                         <a
-                            href="teachers"
+                            href="students"
                             class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                         >
                             <svg
@@ -546,6 +467,7 @@ onMounted(() => {
                         </a>
                     </li>
 
+
                     <li>
                         <a
                             href="#"
@@ -562,7 +484,7 @@ onMounted(() => {
                                     d="M226.5,56.4l-96-32a8.5,8.5,0,0,0-5,0l-95.9,32h-.2l-1,.5h-.1l-1,.6c0,.1-.1.1-.2.2l-.8.7h0l-.7.8c0,.1-.1.1-.1.2l-.6.9c0,.1,0,.1-.1.2l-.4.9h0l-.3,1.1v.3A3.7,3.7,0,0,0,24,64v80a8,8,0,0,0,16,0V75.1L73.6,86.3A63.2,63.2,0,0,0,64,120a64,64,0,0,0,30,54.2,96.1,96.1,0,0,0-46.5,37.4,8.1,8.1,0,0,0,2.4,11.1,7.9,7.9,0,0,0,11-2.3,80,80,0,0,1,134.2,0,8,8,0,0,0,6.7,3.6,7.5,7.5,0,0,0,4.3-1.3,8.1,8.1,0,0,0,2.4-11.1A96.1,96.1,0,0,0,162,174.2,64,64,0,0,0,192,120a63.2,63.2,0,0,0-9.6-33.7l44.1-14.7a8,8,0,0,0,0-15.2ZM128,168a48,48,0,0,1-48-48,48.6,48.6,0,0,1,9.3-28.5l36.2,12.1a8,8,0,0,0,5,0l36.2-12.1A48.6,48.6,0,0,1,176,120,48,48,0,0,1,128,168Z"
                                 />
                             </svg>
-                            <span class="ml-3"> Tugas Siswa</span>
+                            <span class="ml-3">Tugas Siswa</span>
                         </a>
                     </li>
                     <li>
@@ -586,4 +508,61 @@ onMounted(() => {
             </div>
         </aside>
     </div>
+
+
+<!-- index1-->
+<div class="p-6 bg-gray-100 min-h-screen">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+      <h1 class="text-2xl font-bold mb-4">Dashboard Wali Murid</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Informasi/Catatan Saya -->
+        <div class="p-4 bg-green-100 border border-green-300 rounded-lg flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">Informasi/Catatan Saya</h2>
+            <p class="text-sm text-gray-600">0 Catatan</p>
+          </div>
+          <div class="text-green-600">
+            <i class="fas fa-check-circle text-3xl"></i>
+          </div>
+        </div>
+        <!-- Belum Saya Baca -->
+        <div class="p-4 bg-red-100 border border-red-300 rounded-lg flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">Belum Saya Baca</h2>
+            <p class="text-sm text-gray-600">0 Catatan</p>
+          </div>
+          <div class="text-red-600">
+            <i class="fas fa-times-circle text-3xl"></i>
+          </div>
+        </div>
+        <!-- Informasi/Catatan Guru -->
+        <div class="p-4 bg-teal-100 border border-teal-300 rounded-lg flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">Informasi/Catatan Guru</h2>
+            <p class="text-sm text-gray-600">0 Catatan</p>
+          </div>
+          <div class="text-teal-600">
+            <i class="fas fa-info-circle text-3xl"></i>
+          </div>
+        </div>
+        <!-- Semua Informasi/Catatan -->
+        <div class="p-4 bg-blue-100 border border-blue-300 rounded-lg flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">Semua Informasi/Catatan</h2>
+            <p class="text-sm text-gray-600">0 Catatan</p>
+          </div>
+          <div class="text-blue-600">
+            <i class="fas fa-check-double text-3xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <h2 class="text-xl font-semibold mb-2">BubungON (Buku Penghubung Online)</h2>
+        <p class="text-gray-700">
+          BubungON (Buku Penghubung Online) adalah sistem yang menghubungkan antara orang tua dengan guru (wali kelas) di sekolah. BubungON (Buku Penghubung Online) merupakan sebuah administrasi yang dibuat sebagai media komunikasi tidak langsung dalam rangka menyampaikan atau memberitahukan hal-hal penting yang menyangkut perkembangan anak di sekolah dan di rumah.
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- endindex1-->
 </template>

@@ -1,52 +1,69 @@
 <script setup>
-import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import { watch, ref } from "vue";
+import { onMounted, watch, ref } from "vue";
 import axios from "axios";
+import { useForm, usePage } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import { Head, Link } from "@inertiajs/vue3";
+import { type } from "jquery";
+
+const { props } = usePage();
 
 defineProps({
     classes: {
         type: Object,
     },
+    genders: {
+        type: Object,
+    },
+    no_induks: {
+        type: Object,
+    },
+    religions: {
+        type: Object,
+    },
 });
 
-let sections = ref([]); // Pastikan sections adalah array untuk menyimpan data bagian
+// Pastikan props.auth dan props.auth.user ada sebelum digunakan
+const form1 = useForm({
+    name: props.auth?.user?.name || "",
+    email: props.auth?.user?.email || "",
+    role_type: props.auth?.user?.role_type || "", // Berikan nilai default jika props.auth.user tidak ada
+});
 
 const form = useForm({
     name: "",
     email: "",
     class_id: "",
     section_id: "",
+    gender_id: "",
+    religion_id: "",
 });
+
+const sections = ref([]);
+const classes = ref(props.classes.data); // Assuming classes data is passed as a prop
+const genders = ref(props.genders.data); // Assuming genders data is passed as a prop
+const religions = ref(props.religions.data);
 
 watch(
     () => form.class_id,
     (newValue) => {
-        getSections(newValue);
+        if (newValue) {
+            getSections(newValue);
+        }
     }
 );
 
-const getSections = async (classId) => {
-    try {
-        const response = await axios.get(`/api/sections?class_id=${classId}`);
-        sections.value = response.data; // Pastikan data respons ditugaskan dengan benar
-        //console.log(response.data);
-    } catch (error) {
-        console.error("Error fetching sections:", error);
-    }
+const getSections = (class_id) => {
+    axios.get(`/api/sections?class_id=${class_id}`).then((response) => {
+        sections.value = response.data;
+    });
 };
 
-const createStudent = () => {
-    form.post(route("students.store"));
+const submit = () => {
+    form.post(route("students.store"), {
+        preserveScroll: true,
+    });
 };
-
-onMounted(() => {
-    initFlowbite();
-});
 </script>
 
 <!-- update tampilan create data siswa -->
@@ -159,15 +176,24 @@ onMounted(() => {
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                         id="dropdown"
                     >
-                        <div class="py-3 px-4">
-                            <span
-                                class="block text-sm font-semibold text-gray-900 dark:text-white"
-                                >Haikal Hanis (Admin)</span
+                        <div class="py-3 px-3">
+                            <div
+                                class="'block w-full ps-3 pe-4 py-2 border-l-4 border-indigo-400 text-start text-base text-indigo-700 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition duration-150 ease-in-out text-[12px]'"
                             >
-                            <span
-                                class="block text-sm text-gray-900 truncate dark:text-white"
-                                >admin@gmail.com</span
-                            >
+                                <span
+                                    class="block text-sm font-semibold text-gray-900 dark:text-white"
+                                    >{{ $page.props.auth.user.email }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                    >{{ form1.role_type }}</span
+                                >
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
@@ -191,7 +217,7 @@ onMounted(() => {
                 <!--max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 -->
                 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
                     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
-                        <form @submit.prevent="createStudent">
+                        <form @submit.prevent="submit">
                             <div
                                 class="shadow sm:rounded-md sm:overflow-hidden"
                             >
@@ -213,6 +239,29 @@ onMounted(() => {
                                     <div class="grid grid-cols-6 gap-6">
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
+                                                for="nomorInduk"
+                                                class="block text-sm font-medium text-gray-700"
+                                                >Nomor Induk</label
+                                            >
+                                            <input
+                                                v-model="form.no_induk"
+                                                type="text"
+                                                id="nomorInduk"
+                                                placeholder="Masukkan Nomor Induk"
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                :class="{
+                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
+                                                        form.errors.no_induk,
+                                                }"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.no_induk"
+                                            />
+                                        </div>
+
+                                        <div class="col-span-6 sm:col-span-3">
+                                            <label
                                                 for="name"
                                                 class="block text-sm font-medium text-gray-700"
                                                 >Nama</label
@@ -221,6 +270,7 @@ onMounted(() => {
                                                 v-model="form.name"
                                                 type="text"
                                                 id="name"
+                                                placeholder="Masukkan Nama"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
@@ -235,31 +285,33 @@ onMounted(() => {
 
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="email"
+                                                for="gender_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Alamat Email</label
+                                                >Jenis Kelamin</label
                                             >
-                                            <input
-                                                v-model="form.email"
-                                                type="email"
-                                                id="email"
-                                                autocomplete="email"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            <select
+                                                v-model="form.gender_id"
+                                                id="gender_id"
+                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.email,
+                                                        form.errors.gender_id,
                                                 }"
-                                            />
+                                            >
+                                                <option value="">
+                                                    Pilih Jenis Kelamin
+                                                </option>
+                                                <option
+                                                    v-for="item in genders"
+                                                    :key="item.id"
+                                                    :value="item.id"
+                                                >
+                                                    {{ item.name }}
+                                                </option>
+                                            </select>
                                             <InputError
-                                                :message="
-                                                    form.errors
-                                                        .currents_password
-                                                "
                                                 class="mt-2"
-                                            />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="form.errors.email"
+                                                :message="form.errors.gender_id"
                                             />
                                         </div>
 
@@ -267,7 +319,8 @@ onMounted(() => {
                                             <label
                                                 for="class_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                            ></label>
+                                                >Kelas</label
+                                            >
                                             <select
                                                 v-model="form.class_id"
                                                 id="class_id"
@@ -281,7 +334,7 @@ onMounted(() => {
                                                     Pilih Kelas
                                                 </option>
                                                 <option
-                                                    v-for="item in classes.data"
+                                                    v-for="item in classes"
                                                     :key="item.id"
                                                     :value="item.id"
                                                 >
@@ -296,34 +349,35 @@ onMounted(() => {
 
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="section_id"
+                                                for="religion_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Section</label
+                                                >Agama</label
                                             >
                                             <select
-                                                v-model="form.section_id"
-                                                id="section_id"
+                                                v-model="form.religion_id"
+                                                id="religion_id"
                                                 class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.section_id,
+                                                        form.errors.religion_id,
                                                 }"
                                             >
                                                 <option value="">
-                                                    Pilih Section
+                                                    Pilih Agama
                                                 </option>
                                                 <option
-                                                    v-for="section in sections"
-                                                    :key="section.id"
-                                                    :value="section.id"
+                                                    v-for="item in religions"
+                                                    :key="item.id"
+                                                    :value="item.id"
                                                 >
-                                                    {{ section.name }}
+                                                    {{ item.name }}
                                                 </option>
                                             </select>
+
                                             <InputError
                                                 class="mt-2"
                                                 :message="
-                                                    form.errors.section_id
+                                                    form.errors.religion_id
                                                 "
                                             />
                                         </div>

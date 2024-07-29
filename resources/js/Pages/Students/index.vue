@@ -5,9 +5,26 @@ import MagnifyingGlass from "../../Components/Icons/MagnifyingGlass.vue";
 import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { onMounted, ref, watch, computed } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import { type } from "jquery";
+
+const { props } = usePage();
+const form = useForm({
+    name: props.auth.user.name,
+    email: props.auth.user.email,
+    role_type: props.auth.user.role_type,
+});
 
 defineProps({
     students: {
+        type: Object,
+    },
+    genders: {
+        type: Object,
+    },
+    no_induks: {
+        type: Object,
+    },
+    religions: {
         type: Object,
     },
 });
@@ -186,15 +203,24 @@ onMounted(() => {
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                         id="dropdown"
                     >
-                        <div class="py-3 px-4">
-                            <span
-                                class="block text-sm font-semibold text-gray-900 dark:text-white"
-                                >Haikal Hanis (Admin)</span
+                        <div class="py-3 px-3">
+                            <div
+                                class="'block w-full ps-3 pe-4 py-2 border-l-4 border-indigo-400 text-start text-base text-indigo-700 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition duration-150 ease-in-out text-[12px]'"
                             >
-                            <span
-                                class="block text-sm text-gray-900 truncate dark:text-white"
-                                >admin@gmail.com</span
-                            >
+                                <span
+                                    class="block text-sm font-semibold text-gray-900 dark:text-white"
+                                    >{{ $page.props.auth.user.email }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                    >{{ form.role_type }}</span
+                                >
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
@@ -287,13 +313,19 @@ onMounted(() => {
                                                         scope="col"
                                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                                                     >
+                                                        Nomor Induk
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                                                    >
                                                         Nama
                                                     </th>
                                                     <th
                                                         scope="col"
                                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                                                     >
-                                                        Email
+                                                        Jenis Kelamin
                                                     </th>
                                                     <th
                                                         scope="col"
@@ -305,7 +337,7 @@ onMounted(() => {
                                                         scope="col"
                                                         class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                                     >
-                                                        Section
+                                                        Agama
                                                     </th>
                                                     <th
                                                         scope="col"
@@ -334,12 +366,25 @@ onMounted(() => {
                                                     <td
                                                         class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                                                     >
+                                                        <!--   
+                                                             <pre>{{ student }}</pre>
+                                                        }} -->
+                                                        {{
+                                                            student.noInduk
+                                                                .no_induk
+                                                        }}
+                                                    </td>
+                                                    <td
+                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                                    >
                                                         {{ student.name }}
                                                     </td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >
-                                                        {{ student.email }}
+                                                        {{
+                                                            student.gender.name
+                                                        }}
                                                     </td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
@@ -350,9 +395,13 @@ onMounted(() => {
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >
                                                         {{
-                                                            student.section.name
+                                                            student.religion
+                                                                .name
                                                         }}
                                                     </td>
+                                                    <td
+                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                                    ></td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >

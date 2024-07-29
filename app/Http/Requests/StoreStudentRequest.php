@@ -26,6 +26,7 @@ class StoreStudentRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', 'unique:students,email'],
             'class_id' => ['required', 'exists:classes,id'],
             'section_id' => ['required', 'exists:sections,id'],
+
         ];
     }
 
@@ -36,6 +37,8 @@ class StoreStudentRequest extends FormRequest
             'email' => 'email',
             'class_id' => 'class',
             'section_id' => 'section',
+            'gender_id' => 'gender',
+            'religion_id' => 'religion',
         ];
     }
 }

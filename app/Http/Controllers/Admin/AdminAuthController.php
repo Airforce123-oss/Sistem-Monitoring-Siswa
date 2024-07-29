@@ -54,21 +54,7 @@ class AdminAuthController extends Controller
     ]);
 
     Auth::guard('admin')->login($admin);
-
-    // Redirect based on role_type
-    switch ($admin->role_type) {
-        case 'Admin':
-            return redirect()->route('admin.dashboard');
-        case 'Teachers':
-            return redirect()->route('teacher.dashboard');
-        case 'Students':
-            return redirect()->route('student.dashboard');
-        default:
-            return redirect()->route('dashboard');
-    }
 }
-
-
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
