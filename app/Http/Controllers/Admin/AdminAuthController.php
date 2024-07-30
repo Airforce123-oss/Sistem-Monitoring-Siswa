@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use App\Http\Controllers\Admin\DB;
+use Illuminate\Support\Facades\Session;
 
 class AdminAuthController extends Controller
 {
@@ -21,38 +21,40 @@ class AdminAuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin.dashboard');
+        if (Auth::attempt($credentials)) {
+            // Simpan nama user ke session
+            Session::put('name', Auth::user()->name);
+            
+            return redirect()->intended('dashboard');
         }
-
-        return redirect()->route('admin.login')->with('error', 'Invalid credentials.');
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     public function showRegisterForm()
     {
-        //$role = DB::table('role_type_users')->get();
         return Inertia::render('Admin/Auth/Register');
     }
 
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:admins',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+ public function register(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:admins',
+        'password' => 'required|string|min:8|confirmed',
+        'role_type' => 'required|string|in:Admin,Teachers,Student,Parent', // Ensure valid role_type
+    ]);
 
-        $admin = Admin::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    $admin = Admin::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role_type' => $request->role_type, // Save role_type
+    ]);
 
-        Auth::guard('admin')->login($admin);
-
-        return redirect()->route('admin.dashboard');
-    }
-
+    Auth::guard('admin')->login($admin);
+}
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();

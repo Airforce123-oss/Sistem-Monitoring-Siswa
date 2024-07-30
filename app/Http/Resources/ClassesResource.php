@@ -17,3 +17,16 @@ class ClassesResource extends JsonResource
         return parent::toArray($request);
     }
 }
+
+
+
+
+/*
+  return [
+           'id_kelas' => $this->id_kelas,
+            'nama_kelas' => $this->nama_kelas,
+            'kode_kelas' => $this->kode_kelas,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+*/

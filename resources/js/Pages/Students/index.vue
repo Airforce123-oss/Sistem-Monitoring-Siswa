@@ -1,53 +1,63 @@
 <script setup>
 import { initFlowbite } from "flowbite";
 import Pagination from "../../Components/Pagination.vue";
-import MagnifyingGlass from "../../Components/Icons/MagnifyingGlass.vue";
 import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { onMounted, ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+
+const { props } = usePage();
 
 defineProps({
     students: {
         type: Object,
+        required: true,
+    },
+    classes: {
+        type: Object,
+        required: true,
+    },
+    genders: {
+        type: Object,
+        required: true,
+    },
+    no_induks: {
+        type: Object,
+        required: true,
+    },
+    religions: {
+        type: Object,
+        required: true,
     },
 });
 
-let pageNumber = ref(1),
-    searchTerm = ref(usePage().props.search ?? "");
+const form = useForm({
+    name: props.auth.user.name,
+    email: props.auth.user.email,
+    role_type: props.auth.user.role_type,
+});
 
-let studentsUrl = computed(() => {
+let pageNumber = ref(1);
+let searchTerm = ref(props.search ?? "");
+
+const studentsUrl = computed(() => {
     const url = new URL(route("students.index"));
-
     url.searchParams.set("page", pageNumber.value);
-
     if (searchTerm.value) {
         url.searchParams.set("search", searchTerm.value);
     }
-
     return url;
 });
 
 watch(
     () => studentsUrl.value,
     (updatedStudentsUrl) => {
-        router.visit(updatedStudentsUrl, {
+        router.visit(updatedStudentsUrl.toString(), {
             preserveState: true,
             preserveScroll: true,
             replace: true,
         });
     }
 );
-
-/**
- watch(
-    () => search.value,
-    (value) => {
-        if (value) {
-            pageNumber.value = 1;
-        }
-    }
-)
- */
 
 const deleteForm = useForm({});
 
@@ -57,7 +67,7 @@ const deleteStudent = (id) => {
             preserveScroll: true,
             onSuccess: () => {
                 pageNumber.value = 1;
-                router.visit(studentsUrl.value, {
+                router.visit(studentsUrl.value.toString(), {
                     replace: true,
                     preserveState: true,
                     preserveScroll: true,
@@ -68,8 +78,7 @@ const deleteStudent = (id) => {
 };
 
 const updatedPageNumber = (link) => {
-    //console.log(link.url);
-    pageNumber.value = link.url.split("=")[1];
+    pageNumber.value = link.url.split("=").pop();
 };
 
 onMounted(() => {
@@ -186,15 +195,24 @@ onMounted(() => {
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                         id="dropdown"
                     >
-                        <div class="py-3 px-4">
-                            <span
-                                class="block text-sm font-semibold text-gray-900 dark:text-white"
-                                >Haikal Hanis (Admin)</span
+                        <div class="py-3 px-3">
+                            <div
+                                class="'block w-full ps-3 pe-4 py-2 border-l-4 border-indigo-400 text-start text-base text-indigo-700 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition duration-150 ease-in-out text-[12px]'"
                             >
-                            <span
-                                class="block text-sm text-gray-900 truncate dark:text-white"
-                                >admin@gmail.com</span
-                            >
+                                <span
+                                    class="block text-sm font-semibold text-gray-900 dark:text-white"
+                                    >{{ $page.props.auth.user.email }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                    >{{ form.role_type }}</span
+                                >
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
@@ -220,7 +238,7 @@ onMounted(() => {
 
             <div class="flex-1 p-6">
                 <div class="mx-auto max-w-7xl sm:items-center">
-                    <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="px-4 py-4 sm:px-6 lg:px-8">
                         <div class="sm:flex sm:items-center">
                             <div class="sm:flex-auto">
                                 <h1
@@ -237,7 +255,7 @@ onMounted(() => {
                                 <Link
                                     :href="route('students.create')"
                                     class="inline-flex items-center justify-center rounded-md border border-transparent bg-[#8ec3b3] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                >
+                                    ><i class="fa fa-plus"></i>
                                     Tambah Siswa
                                 </Link>
                             </div>
@@ -287,13 +305,19 @@ onMounted(() => {
                                                         scope="col"
                                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                                                     >
+                                                        Nomor Induk
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                                                    >
                                                         Nama
                                                     </th>
                                                     <th
                                                         scope="col"
                                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                                                     >
-                                                        Email
+                                                        Jenis Kelamin
                                                     </th>
                                                     <th
                                                         scope="col"
@@ -305,7 +329,7 @@ onMounted(() => {
                                                         scope="col"
                                                         class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                                     >
-                                                        Section
+                                                        Agama
                                                     </th>
                                                     <th
                                                         scope="col"
@@ -323,7 +347,8 @@ onMounted(() => {
                                                 class="divide-y divide-gray-200 bg-white"
                                             >
                                                 <tr
-                                                    v-for="student in students.data"
+                                                    v-for="student in props
+                                                        .students.data"
                                                     :key="student.id"
                                                 >
                                                     <td
@@ -334,12 +359,25 @@ onMounted(() => {
                                                     <td
                                                         class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                                                     >
+                                                        <!--   
+                                                             <pre>{{ student }}</pre>
+                                                        }} -->
+                                                        {{
+                                                            student.noInduk
+                                                                .no_induk
+                                                        }}
+                                                    </td>
+                                                    <td
+                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                                    >
                                                         {{ student.name }}
                                                     </td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >
-                                                        {{ student.email }}
+                                                        {{
+                                                            student.gender.name
+                                                        }}
                                                     </td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
@@ -350,9 +388,13 @@ onMounted(() => {
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >
                                                         {{
-                                                            student.section.name
+                                                            student.religion
+                                                                .name
                                                         }}
                                                     </td>
+                                                    <td
+                                                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                                    ></td>
                                                     <td
                                                         class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                                                     >
@@ -392,6 +434,7 @@ onMounted(() => {
                                         :data="students"
                                         :updatedPageNumber="updatedPageNumber"
                                     />
+                                    
                                 </div>
                             </div>
                         </div>
@@ -464,6 +507,7 @@ onMounted(() => {
                             <span class="ml-3">Beranda</span>
                         </a>
                     </li>
+
                     <li>
                         <button
                             type="button"
@@ -507,13 +551,6 @@ onMounted(() => {
                                     href="students"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >Data Induk Siswa</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Absensi Siswa</a
                                 >
                             </li>
                         </ul>
@@ -578,7 +615,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -595,7 +632,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -611,19 +648,21 @@ onMounted(() => {
                                 ></path>
                             </svg>
                         </button>
+
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="tugas"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
                         <a
                             href="penilaian"
@@ -661,27 +700,6 @@ onMounted(() => {
                             </svg>
                             <span class="ml-3">Penilaian Siswa</span>
                         </a>
-                    </li>
-                    <li>
-                        <button
-                            type="button"
-                            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                        >
-                            <svg
-                                viewBox="0 0 576 512"
-                                class="w-6 h-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M144.3 32.04C106.9 31.29 63.7 41.44 18.6 61.29c-11.42 5.026-18.6 16.67-18.6 29.15l0 357.6c0 11.55 11.99 19.55 22.45 14.65c126.3-59.14 219.8 11 223.8 14.01C249.1 478.9 252.5 480 256 480c12.4 0 16-11.38 16-15.98V80.04c0-5.203-2.531-10.08-6.781-13.08C263.3 65.58 216.7 33.35 144.3 32.04zM557.4 61.29c-45.11-19.79-88.48-29.61-125.7-29.26c-72.44 1.312-118.1 33.55-120.9 34.92C306.5 69.96 304 74.83 304 80.04v383.1C304 468.4 307.5 480 320 480c3.484 0 6.938-1.125 9.781-3.328c3.925-3.018 97.44-73.16 223.8-14c10.46 4.896 22.45-3.105 22.45-14.65l.0001-357.6C575.1 77.97 568.8 66.31 557.4 61.29z"
-                                />
-                            </svg>
-
-                            <span
-                                class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Buku Penghubung</span
-                            >
-                        </button>
                     </li>
                 </ul>
             </div>

@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
@@ -21,6 +22,17 @@ const form = useForm({
     password: "",
     remember: false,
 });
+
+const userName = ref("");
+
+const fetchSessionData = async () => {
+    try {
+        const response = await axios.get("/api/session-data");
+        userName.value = response.data.name;
+    } catch (error) {
+        console.error("There was an error fetching the session data:", error);
+    }
+};
 
 const submit = () => {
     form.post(route("login"), {

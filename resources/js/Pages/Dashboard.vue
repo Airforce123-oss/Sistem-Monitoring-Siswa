@@ -1,14 +1,123 @@
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { initFlowbite } from "flowbite";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import ChartComponent from "@/Components/ChartComponent.vue";
-//import VueApexCharts from "vue-apexcharts";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import DeleteUserForm from "./Partials/DeleteUserForm.vue";
+import UpdatePasswordForm from "./Partials/UpdatePasswordForm.vue";
+import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm.vue";
+import { Link, useForm, usePage } from "@inertiajs/vue3";
+import VueApexCharts from "vue-apexcharts";
+import ApexCharts from "apexcharts";
+import axios from "axios";
+
+const userName = ref("");
+const { props } = usePage();
+const form = useForm({
+    name: props.auth.user.name,
+    email: props.auth.user.email,
+    role_type: props.auth.user.role_type,
+});
 
 onMounted(() => {
     initFlowbite();
+
+    // Line Chart Options
+    const lineChartOptions = {
+        chart: { height: 300, type: "line", toolbar: { show: false } },
+        dataLabels: { enabled: false },
+        stroke: { curve: "smooth" },
+        series: [
+            {
+                name: "Guru",
+                color: "#3D5EE1",
+                data: [45, 60, 75, 51, 42, 42, 30],
+            },
+            {
+                name: "Siswa",
+                color: "#70C4CF",
+                data: [24, 48, 56, 32, 34, 52, 25],
+            },
+        ],
+        xaxis: {
+            categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        },
+    };
+    const lineChart = new ApexCharts(
+        document.querySelector("#apexcharts-area"),
+        lineChartOptions
+    );
+    lineChart.render();
+
+    // Bar Chart Options
+    const barChartOptions = {
+        chart: {
+            type: "bar",
+            height: 300,
+            width: "100%",
+            stacked: false,
+            toolbar: { show: false },
+        },
+        dataLabels: { enabled: false },
+        plotOptions: {
+            bar: { columnWidth: "55%", endingShape: "rounded" },
+        },
+        stroke: { show: true, width: 2, colors: ["transparent"] },
+        series: [
+            {
+                name: "Laki-laki",
+                color: "#70C4CF",
+                data: [
+                    420, 532, 516, 575, 519, 517, 454, 392, 262, 383, 446, 551,
+                ],
+            },
+            {
+                name: "Perempuan",
+                color: "#3D5EE1",
+                data: [
+                    336, 612, 344, 647, 345, 563, 256, 344, 323, 300, 455, 456,
+                ],
+            },
+        ],
+        xaxis: {
+            categories: [
+                2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018,
+                2019, 2020,
+            ],
+            labels: { show: false },
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+        },
+        yaxis: {
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+            labels: { style: { colors: "#777" } },
+        },
+        title: { text: "", align: "left", style: { fontSize: "18px" } },
+    };
+    const barChart = new ApexCharts(
+        document.querySelector("#bar"),
+        barChartOptions
+    );
+    barChart.render();
+    /*
+      const fetchSessionData = async () => {
+        try {
+            const response = await axios.get("/api/session-data");
+            userName.value = response.data.name;
+        } catch (error) {
+            console.error(
+                "There was an error fetching the session data:",
+                error
+            );
+        }
+    };
+
+    fetchSessionData();
+     */
 });
 </script>
+
 <template>
     <div class="antialiased bg-gray-50 dark:bg-gray-900">
         <nav
@@ -122,15 +231,24 @@ onMounted(() => {
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                         id="dropdown"
                     >
-                        <div class="py-3 px-4">
-                            <span
-                                class="block text-sm font-semibold text-gray-900 dark:text-white"
-                                >Haikal Hanis (Admin)</span
+                        <div class="py-3 px-3">
+                            <div
+                                class="'block w-full ps-3 pe-4 py-2 border-l-4 border-indigo-400 text-start text-base text-indigo-700 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition duration-150 ease-in-out text-[12px]'"
                             >
-                            <span
-                                class="block text-sm text-gray-900 truncate dark:text-white"
-                                >admin@gmail.com</span
-                            >
+                                <span
+                                    class="block text-sm font-semibold text-gray-900 dark:text-white"
+                                    >{{ $page.props.auth.user.email }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                    >{{ form.role_type }}</span
+                                >
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
@@ -151,18 +269,22 @@ onMounted(() => {
 
         <!-- Main -->
 
-        <main class="p-4 md:ml-64 h-screen pt-20">
+        <main class="p-7 md:ml-64 h-screen pt-20">
             <Head title="Dashboard" />
+
             <div class="text-2xl col-sm-12 mb-10">
                 <div class="page-sub-header">
-                    <h3 class="page-title">Selamat Datang !</h3>
+                    <h3 class="page-title">
+                        Selamat Datang {{ $page.props.auth.user.name }}!
+                    </h3>
                 </div>
             </div>
+
             <div
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
             >
                 <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
+                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
                     id=""
                 >
                     <h2 class="text-center">SISWA</h2>
@@ -170,23 +292,23 @@ onMounted(() => {
                         class="output text-center mt-5 text-xl text-[#ffffff]"
                         placeholder=""
                     >
-                        0
+                        509
                     </p>
                 </div>
 
                 <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
+                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
                 >
                     <h2 class="text-center">KELAS</h2>
                     <p
                         class="output text-center mt-5 text-xl text-[#ffffff]"
                         placeholder=""
                     >
-                        0
+                        16
                     </p>
                 </div>
                 <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
+                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
                 >
                     <h2 class="text-center">TOTAL KEHADIRAN SISWA</h2>
                     <p
@@ -197,7 +319,7 @@ onMounted(() => {
                     </p>
                 </div>
                 <div
-                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-20 md:h-34"
+                    class="border-2 border-solid border-gray-300 bg-[#8ec3b3] rounded-lg dark:border-gray-600 h-15 md:h-34"
                 >
                     <h2 class="text-center">ABSEN MASUK HARI INI</h2>
                     <p
@@ -208,17 +330,83 @@ onMounted(() => {
                     </p>
                 </div>
             </div>
-            <!--     <div id="chart">
-                <apexchart
-                    type="area"
-                    height="350"
-                    :options="chartOptions"
-                    :series="series"
-                ></apexchart>
-            <ChartComponent>
-                
-            </ChartComponent>
-            </div> -->
+            <div class="row">
+                <div class="col-md-12 col-lg-6">
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <h5 class="card-title">Overview</h5>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="chart-list-out">
+                                        <li>
+                                            <span class="circle-blue"></span
+                                            >Guru
+                                        </li>
+                                        <li>
+                                            <span class="circle-green"></span
+                                            >Siswa
+                                        </li>
+                                        <li class="star-menus">
+                                            <a href="javascript:;"
+                                                ><i
+                                                    class="fas fa-ellipsis-v"
+                                                ></i
+                                            ></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="apexcharts-area"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-lg-6">
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <h5 class="card-title">Jumlah Siswa</h5>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="chart-list-out">
+                                        <li>
+                                            <span class="circle-blue"></span
+                                            >Perempuan
+                                        </li>
+                                        <li>
+                                            <span class="circle-green"></span
+                                            >Laki-laki
+                                        </li>
+                                        <li class="star-menus">
+                                            <a href="javascript:;"
+                                                ><i
+                                                    class="fas fa-ellipsis-v"
+                                                ></i
+                                            ></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+             <p>
+                Catatan: Melihat data siswa, mengelola data siswa, melihat data
+                guru, mengelola data guru, melihat presensi siswa, mengelola
+                presensi siswa, melihat presensi guru mengelola presensi guru,
+                melihat mata pelajaran, mengelola mata pelajaran,
+            </p>
+            -->
         </main>
         <!-- Sidebar -->
 
@@ -283,12 +471,14 @@ onMounted(() => {
                             <span class="ml-3">Beranda</span>
                         </a>
                     </li>
+
                     <li>
                         <button
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-pages"
                             data-collapse-toggle="dropdown-pages"
+                            aria-expanded="true"
                         >
                             <svg
                                 viewBox="0 0 256 256"
@@ -326,13 +516,6 @@ onMounted(() => {
                                     href="students"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >Data Induk Siswa</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Absensi Siswa</a
                                 >
                             </li>
                         </ul>
@@ -397,7 +580,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -414,7 +597,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -432,18 +615,19 @@ onMounted(() => {
                         </button>
 
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="tugas"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
                         <a
                             href="penilaian"
@@ -481,27 +665,6 @@ onMounted(() => {
                             </svg>
                             <span class="ml-3">Penilaian Siswa</span>
                         </a>
-                    </li>
-                    <li>
-                        <button
-                            type="button"
-                            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                        >
-                            <svg
-                                viewBox="0 0 576 512"
-                                class="w-6 h-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M144.3 32.04C106.9 31.29 63.7 41.44 18.6 61.29c-11.42 5.026-18.6 16.67-18.6 29.15l0 357.6c0 11.55 11.99 19.55 22.45 14.65c126.3-59.14 219.8 11 223.8 14.01C249.1 478.9 252.5 480 256 480c12.4 0 16-11.38 16-15.98V80.04c0-5.203-2.531-10.08-6.781-13.08C263.3 65.58 216.7 33.35 144.3 32.04zM557.4 61.29c-45.11-19.79-88.48-29.61-125.7-29.26c-72.44 1.312-118.1 33.55-120.9 34.92C306.5 69.96 304 74.83 304 80.04v383.1C304 468.4 307.5 480 320 480c3.484 0 6.938-1.125 9.781-3.328c3.925-3.018 97.44-73.16 223.8-14c10.46 4.896 22.45-3.105 22.45-14.65l.0001-357.6C575.1 77.97 568.8 66.31 557.4 61.29z"
-                                />
-                            </svg>
-
-                            <span
-                                class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Buku Penghubung</span
-                            >
-                        </button>
                     </li>
                 </ul>
             </div>

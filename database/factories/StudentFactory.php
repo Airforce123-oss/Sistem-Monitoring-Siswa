@@ -19,8 +19,7 @@ class StudentFactory extends Factory
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            //'class_id' => \App\Models\Classes::factory(),
-            //'section_id' => \App\Models\Section::factory (),
         ];
     }
 }
+

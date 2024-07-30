@@ -1,52 +1,89 @@
 <script setup>
-import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import { watch, ref } from "vue";
+import { onMounted, watch, ref } from "vue";
 import axios from "axios";
+import { Head, useForm, Link } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
-defineProps({
-    classes: {
-        type: Object,
-    },
+const props = defineProps({
+    classes: { type: Object, default: () => ({ data: [] }) },
+    genders: { type: Object, default: () => ({ data: [] }) },
+    no_induks: { type: Object, default: () => ({ data: [] }) },
+    religions: { type: Object, default: () => ({ data: [] }) },
+    students: { type: Object, default: () => ({ data: [] }) },
 });
-
-let sections = ref([]); // Pastikan sections adalah array untuk menyimpan data bagian
 
 const form = useForm({
+    no_induk: "",
     name: "",
-    email: "",
+    gender_id: "",
     class_id: "",
-    section_id: "",
+    religion_id: "",
 });
 
-watch(
-    () => form.class_id,
-    (newValue) => {
-        getSections(newValue);
-    }
-);
+let sections = ref([]);
+//const students = ref(props.students.data || []);
+const classes = ref(props.classes.data || []);
+let genders = ref(props.genders.data || []);
+const religions = ref(props.religions.data || []);
+const no_induks = ref(props.no_induks.data || []);
 
-const getSections = async (classId) => {
-    try {
-        const response = await axios.get(`/api/sections?class_id=${classId}`);
-        sections.value = response.data; // Pastikan data respons ditugaskan dengan benar
-        //console.log(response.data);
-    } catch (error) {
-        console.error("Error fetching sections:", error);
-    }
+// Fetch sections based on class_id
+const getSections = (class_id) => {
+    axios.get(`/api/sections?class_id=${class_id}`).then((response) => {
+        console.log(response.data);
+    });
 };
 
-const createStudent = () => {
-    form.post(route("students.store"));
+const getGender = (gender_id) => {
+    axios.get(`/api/genders?gender_id=${gender_id}`).then((response) => {
+        console.log(response.data);
+    });
 };
 
 onMounted(() => {
-    initFlowbite();
+    console.log("Students data on mounted:", props.students);
 });
+
+// Create student function
+const createStudent = async () => {
+    try {
+        await form.post(route("students.store"), {
+            preserveScroll: true,
+        });
+
+        // Optionally, handle successful submission
+    } catch (error) {
+        if (
+            error.response &&
+            error.response.data &&
+            error.response.data.errors
+        ) {
+            Object.keys(error.response.data.errors).forEach((key) => {
+                form.errors[key] = error.response.data.errors[key];
+            });
+        }
+    }
+};
+
+// Watch for changes to class_id
+watch(
+    () => form.class_id,
+    (newValue) => {
+        if (newValue) {
+            getSections(newValue);
+        }
+    }
+);
+
+watch(
+    () => form.gender_id,
+    (newValue) => {
+        if (newValue) {
+            getGender(newValue);
+        }
+    }
+);
 </script>
 
 <!-- update tampilan create data siswa -->
@@ -159,15 +196,24 @@ onMounted(() => {
                         class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                         id="dropdown"
                     >
-                        <div class="py-3 px-4">
-                            <span
-                                class="block text-sm font-semibold text-gray-900 dark:text-white"
-                                >Haikal Hanis (Admin)</span
+                        <div class="py-3 px-3">
+                            <div
+                                class="'block w-full ps-3 pe-4 py-2 border-l-4 border-indigo-400 text-start text-base text-indigo-700 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition duration-150 ease-in-out text-[12px]'"
                             >
-                            <span
-                                class="block text-sm text-gray-900 truncate dark:text-white"
-                                >admin@gmail.com</span
-                            >
+                                <span
+                                    class="block text-sm font-semibold text-gray-900 dark:text-white"
+                                    >{{ $page.props.auth.user.email }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <span
+                                    class="block text-sm text-gray-900 truncate dark:text-white"
+                                    >{{ form.role_type }}</span
+                                >
+                            </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
@@ -187,7 +233,7 @@ onMounted(() => {
         </nav>
         <!-- start1 -->
         <main class="p-4 md:ml-64 h-auto pt-20">
-            <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8 mt-10">
                 <!--max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 -->
                 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
                     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
@@ -209,18 +255,44 @@ onMounted(() => {
                                             siswa
                                         </p>
                                     </div>
-
                                     <div class="grid grid-cols-6 gap-6">
+                                        <!-- Nomor Induk -->
+                                        <div class="col-span-6 sm:col-span-3">
+                                            <label
+                                                for="nomorInduk"
+                                                class="block text-sm font-medium text-gray-700"
+                                            >
+                                                Nomor Induk
+                                            </label>
+                                            <input
+                                                v-model="form.no_induk"
+                                                type="text"
+                                                id="nomorInduk"
+                                                placeholder="Masukkan Nomor Induk"
+                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                :class="{
+                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
+                                                        form.errors.no_induk,
+                                                }"
+                                            />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.no_induk"
+                                            />
+                                        </div>
+                                        <!-- Nama -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="name"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Nama</label
                                             >
+                                                Nama
+                                            </label>
                                             <input
                                                 v-model="form.name"
                                                 type="text"
                                                 id="name"
+                                                placeholder="Masukkan Nama"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
@@ -232,42 +304,47 @@ onMounted(() => {
                                                 :message="form.errors.name"
                                             />
                                         </div>
-
+                                        <!-- Jenis Kelamin -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="email"
+                                                for="gender_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Alamat Email</label
                                             >
-                                            <input
-                                                v-model="form.email"
-                                                type="email"
-                                                id="email"
-                                                autocomplete="email"
-                                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                Jenis Kelamin
+                                            </label>
+                                            <select
+                                                v-model="form.gender_id"
+                                                id="gender_id"
+                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.email,
+                                                        form.errors.gender_id,
                                                 }"
-                                            />
+                                            >
+                                                <option value="">
+                                                    Pilih Jenis Kelamin
+                                                </option>
+                                                <option
+                                                    v-for="item in genders"
+                                                    :key="item.id"
+                                                    :value="item.id"
+                                                >
+                                                    {{ item.name }}
+                                                </option>
+                                            </select>
                                             <InputError
-                                                :message="
-                                                    form.errors
-                                                        .currents_password
-                                                "
                                                 class="mt-2"
-                                            />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="form.errors.email"
+                                                :message="form.errors.gender_id"
                                             />
                                         </div>
-
+                                        <!-- Kelas -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
                                                 for="class_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                            ></label>
+                                            >
+                                                Kelas
+                                            </label>
                                             <select
                                                 v-model="form.class_id"
                                                 id="class_id"
@@ -281,7 +358,7 @@ onMounted(() => {
                                                     Pilih Kelas
                                                 </option>
                                                 <option
-                                                    v-for="item in classes.data"
+                                                    v-for="item in classes"
                                                     :key="item.id"
                                                     :value="item.id"
                                                 >
@@ -293,37 +370,38 @@ onMounted(() => {
                                                 :message="form.errors.class_id"
                                             />
                                         </div>
-
+                                        <!-- Agama -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="section_id"
+                                                for="religion_id"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Section</label
                                             >
+                                                Agama
+                                            </label>
                                             <select
-                                                v-model="form.section_id"
-                                                id="section_id"
+                                                v-model="form.religion_id"
+                                                id="religion_id"
                                                 class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 :class="{
                                                     'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.section_id,
+                                                        form.errors.religion_id,
                                                 }"
                                             >
                                                 <option value="">
-                                                    Pilih Section
+                                                    Pilih Agama
                                                 </option>
                                                 <option
-                                                    v-for="section in sections"
-                                                    :key="section.id"
-                                                    :value="section.id"
+                                                    v-for="item in religions"
+                                                    :key="item.id"
+                                                    :value="item.id"
                                                 >
-                                                    {{ section.name }}
+                                                    {{ item.name }}
                                                 </option>
                                             </select>
                                             <InputError
                                                 class="mt-2"
                                                 :message="
-                                                    form.errors.section_id
+                                                    form.errors.religion_id
                                                 "
                                             />
                                         </div>
@@ -334,13 +412,13 @@ onMounted(() => {
                                 >
                                     <Link
                                         :href="route('students.index')"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5"
                                     >
-                                        Batal
+                                        Kembali
                                     </Link>
                                     <button
                                         type="submit"
-                                        class="bg-[#8ec3b3] border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#7a8b8e] hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     >
                                         Simpan
                                     </button>
@@ -416,6 +494,7 @@ onMounted(() => {
                             <span class="ml-3">Beranda</span>
                         </a>
                     </li>
+
                     <li>
                         <button
                             type="button"
@@ -459,13 +538,6 @@ onMounted(() => {
                                     href="students"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >Data Induk Siswa</a
-                                >
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Absensi Siswa</a
                                 >
                             </li>
                         </ul>
@@ -530,7 +602,7 @@ onMounted(() => {
                             type="button"
                             class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                             aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
+                            data-collapse-toggle="dropdown-authentication1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -547,7 +619,7 @@ onMounted(() => {
 
                             <span
                                 class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
+                                >Mata Pelajaran</span
                             >
                             <svg
                                 aria-hidden="true"
@@ -563,39 +635,58 @@ onMounted(() => {
                                 ></path>
                             </svg>
                         </button>
+
                         <ul
-                            id="dropdown-authentication"
+                            id="dropdown-authentication1"
                             class="hidden py-2 space-y-2"
                         >
                             <li>
                                 <a
-                                    href="#"
+                                    href="mataPelajaran"
                                     class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
+                                    >Tambah Mata Pelajaran</a
                                 >
                             </li>
                         </ul>
                     </li>
+
                     <li>
-                        <button
-                            type="button"
-                            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                        <a
+                            href="penilaian"
+                            class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                         >
                             <svg
-                                viewBox="0 0 576 512"
-                                class="w-6 h-6"
+                                fill="none"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                width="24"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <path
-                                    d="M144.3 32.04C106.9 31.29 63.7 41.44 18.6 61.29c-11.42 5.026-18.6 16.67-18.6 29.15l0 357.6c0 11.55 11.99 19.55 22.45 14.65c126.3-59.14 219.8 11 223.8 14.01C249.1 478.9 252.5 480 256 480c12.4 0 16-11.38 16-15.98V80.04c0-5.203-2.531-10.08-6.781-13.08C263.3 65.58 216.7 33.35 144.3 32.04zM557.4 61.29c-45.11-19.79-88.48-29.61-125.7-29.26c-72.44 1.312-118.1 33.55-120.9 34.92C306.5 69.96 304 74.83 304 80.04v383.1C304 468.4 307.5 480 320 480c3.484 0 6.938-1.125 9.781-3.328c3.925-3.018 97.44-73.16 223.8-14c10.46 4.896 22.45-3.105 22.45-14.65l.0001-357.6C575.1 77.97 568.8 66.31 557.4 61.29z"
+                                    d="M6 6C6 5.44772 6.44772 5 7 5H17C17.5523 5 18 5.44772 18 6C18 6.55228 17.5523 7 17 7H7C6.44771 7 6 6.55228 6 6Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M6 10C6 9.44771 6.44772 9 7 9H17C17.5523 9 18 9.44771 18 10C18 10.5523 17.5523 11 17 11H7C6.44771 11 6 10.5523 6 10Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M7 13C6.44772 13 6 13.4477 6 14C6 14.5523 6.44771 15 7 15H17C17.5523 15 18 14.5523 18 14C18 13.4477 17.5523 13 17 13H7Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M6 18C6 17.4477 6.44772 17 7 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H7C6.44772 19 6 18.5523 6 18Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    clip-rule="evenodd"
+                                    d="M2 4C2 2.34315 3.34315 1 5 1H19C20.6569 1 22 2.34315 22 4V20C22 21.6569 20.6569 23 19 23H5C3.34315 23 2 21.6569 2 20V4ZM5 3H19C19.5523 3 20 3.44771 20 4V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4C4 3.44772 4.44771 3 5 3Z"
+                                    fill="currentColor"
+                                    fill-rule="evenodd"
                                 />
                             </svg>
-
-                            <span
-                                class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Buku Penghubung</span
-                            >
-                        </button>
+                            <span class="ml-3">Penilaian Siswa</span>
+                        </a>
                     </li>
                 </ul>
             </div>

@@ -4,6 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SectionController;
 use App\Models\Student;
+use App\Models\Mapel;
+use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\User\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +30,13 @@ Route::get('/students/count', function () {
     $totalSiswa = Student::count();
     return response()->json(['total' => $totalSiswa]);
 });
+Route::get('/mapel/count', function () {
+    $totalMapel = Mapel::count();
+    return response()->json(['total' => $totalMapel]);
+});
+
+Route::get('/session-name', function () {
+    return response()->json(['name' => Session::get('name')]);
+});
+
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getUser']);

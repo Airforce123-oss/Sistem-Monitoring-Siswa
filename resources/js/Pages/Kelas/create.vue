@@ -9,7 +9,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 defineProps({
-    classes: {
+    classes_for_student: {
         type: Object,
     },
 });
@@ -18,9 +18,7 @@ let sections = ref([]); // Pastikan sections adalah array untuk menyimpan data b
 
 const form = useForm({
     name: "",
-    email: "",
     class_id: "",
-    section_id: "",
 });
 
 watch(
@@ -186,146 +184,15 @@ onMounted(() => {
             </div>
         </nav>
         <!-- start1 -->
-        <main class="p-4 md:ml-64 h-auto pt-20">
-            <div class="page-wrapper">
-                <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h3 class="page-title">Add Department</h3>
-                                <ul class="breadcrumb">
-                                    <li class="breadcrumb-item">
-                                        <a href="departments.html"
-                                            >Department</a
-                                        >
-                                    </li>
-                                    <li class="breadcrumb-item active">
-                                        Add Department
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <form
-                                        action="{{ route('department/save') }}"
-                                        method="POST"
-                                    >
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h5 class="form-title">
-                                                    <span
-                                                        >Department
-                                                        Details</span
-                                                    >
-                                                </h5>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >Department Name
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="department_name"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >Head of Department
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="head_of_department"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms calendar-icon"
-                                                >
-                                                    <label
-                                                        >Department Start Date
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        class="form-control datetimepicker"
-                                                        type="text"
-                                                        name="department_start_date"
-                                                        placeholder="DD-MM-YYYY"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div
-                                                    class="form-group local-forms"
-                                                >
-                                                    <label
-                                                        >No of Students
-                                                        <span
-                                                            class="login-danger"
-                                                            >*</span
-                                                        ></label
-                                                    >
-                                                    <input
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="no_of_students"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="student-submit">
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-primary"
-                                                    >
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <!-- end1-->
+ 
 
         <!--start2-->
 
-        <main class="p-4 md:ml-64 h-auto pt-20">
+        <main class="p-4 md:ml-64 h-auto pt-30">
             <div class="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
                 <!--max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 -->
                 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
-                    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12">
+                    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-12 mt-10">
                         <form @submit.prevent="createStudent">
                             <div
                                 class="shadow sm:rounded-md sm:overflow-hidden"
@@ -350,7 +217,7 @@ onMounted(() => {
                                             <label
                                                 for="name"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Nama</label
+                                                >Nama Kelas</label
                                             >
                                             <input
                                                 v-model="form.name"
@@ -367,101 +234,33 @@ onMounted(() => {
                                                 :message="form.errors.name"
                                             />
                                         </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-3">
                                             <label
-                                                for="email"
+                                                for="name"
                                                 class="block text-sm font-medium text-gray-700"
-                                                >Alamat Email</label
+                                                >Kode Kelas</label
                                             >
                                             <input
-                                                v-model="form.email"
-                                                type="email"
-                                                id="email"
-                                                autocomplete="email"
+                                               
+                                                type="text"
+                                                id="name"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                :class="{
-                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.email,
-                                                }"
-                                            />
-                                            <InputError
-                                                :message="
-                                                    form.errors
-                                                        .currents_password
-                                                "
-                                                class="mt-2"
-                                            />
-                                            <InputError
-                                                class="mt-2"
-                                                :message="form.errors.email"
-                                            />
-                                        </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label
-                                                for="class_id"
-                                                class="block text-sm font-medium text-gray-700"
-                                            ></label>
-                                            <select
-                                                v-model="form.class_id"
-                                                id="class_id"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                :class="{
-                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.class_id,
-                                                }"
-                                            >
-                                                <option value="">
-                                                    Pilih Kelas
-                                                </option>
-                                            </select>
-                                            <InputError
-                                                class="mt-2"
-                                                :message="form.errors.class_id"
-                                            />
-                                        </div>
-
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label
-                                                for="section_id"
-                                                class="block text-sm font-medium text-gray-700"
-                                                >Section</label
-                                            >
-                                            <select
-                                                v-model="form.section_id"
-                                                id="section_id"
-                                                class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                :class="{
-                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300':
-                                                        form.errors.section_id,
-                                                }"
-                                            >
-                                                <option value="">
-                                                    Pilih Section
-                                                </option>
-                                                <option
-                                                    v-for="section in sections"
-                                                    :key="section.id"
-                                                    :value="section.id"
-                                                >
-                                                    {{ section.name }}
-                                                </option>
-                                            </select>
-                                            <InputError
-                                                class="mt-2"
-                                                :message="
-                                                    form.errors.section_id
+                                                :class="
+                                                    'text-red-900 focus:ring-red-500 focus:border-red-500 border-red-300'
                                                 "
                                             />
+                                            <InputError
+                                                class="mt-2"
+                                                :message="form.errors.name"
+                                            />
                                         </div>
-                                    </div>
                                 </div>
                                 <div
                                     class="px-4 py-3 bg-gray-50 text-right sm:px-6"
                                 >
                                     <Link
-                                        :href="route('students.index')"
+                                        :href="route('kelas.index')"
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[#8ec3b3] bg-indigo-100 hover:bg-[#4d918f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4"
                                     >
                                         Batal
@@ -481,7 +280,6 @@ onMounted(() => {
         </main>
 
         <!--end2-->
-
 
         <!-- Sidebar -->
         <aside
@@ -653,58 +451,7 @@ onMounted(() => {
                             </li>
                         </ul>
                     </li>
-
-                    <li>
-                        <button
-                            type="button"
-                            class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                            aria-controls="dropdown-authentication"
-                            data-collapse-toggle="dropdown-authentication"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                class="w-5 h-5"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M9.664 1.319a.75.75 0 0 1 .672 0 41.059 41.059 0 0 1 8.198 5.424.75.75 0 0 1-.254 1.285 31.372 31.372 0 0 0-7.86 3.83.75.75 0 0 1-.84 0 31.508 31.508 0 0 0-2.08-1.287V9.394c0-.244.116-.463.302-.592a35.504 35.504 0 0 1 3.305-2.033.75.75 0 0 0-.714-1.319 37 37 0 0 0-3.446 2.12A2.216 2.216 0 0 0 6 9.393v.38a31.293 31.293 0 0 0-4.28-1.746.75.75 0 0 1-.254-1.285 41.059 41.059 0 0 1 8.198-5.424ZM6 11.459a29.848 29.848 0 0 0-2.455-1.158 41.029 41.029 0 0 0-.39 3.114.75.75 0 0 0 .419.74c.528.256 1.046.53 1.554.82-.21.324-.455.63-.739.914a.75.75 0 1 0 1.06 1.06c.37-.369.69-.77.96-1.193a26.61 26.61 0 0 1 3.095 2.348.75.75 0 0 0 .992 0 26.547 26.547 0 0 1 5.93-3.95.75.75 0 0 0 .42-.739 41.053 41.053 0 0 0-.39-3.114 29.925 29.925 0 0 0-5.199 2.801 2.25 2.25 0 0 1-2.514 0c-.41-.275-.826-.541-1.25-.797a6.985 6.985 0 0 1-1.084 3.45 26.503 26.503 0 0 0-1.281-.78A5.487 5.487 0 0 0 6 12v-.54Z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-
-                            <span
-                                class="flex-1 ml-3 text-left whitespace-nowrap"
-                                >Tugas</span
-                            >
-                            <svg
-                                aria-hidden="true"
-                                class="w-6 h-6"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"
-                                ></path>
-                            </svg>
-                        </button>
-                        <ul
-                            id="dropdown-authentication"
-                            class="hidden py-2 space-y-2"
-                        >
-                            <li>
-                                <a
-                                    href="#"
-                                    class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                    >Upload Tugas</a
-                                >
-                            </li>
-                        </ul>
-                    </li>
+                    
                     <li>
                         <a
                             href="penilaian"
