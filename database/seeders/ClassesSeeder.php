@@ -9,6 +9,9 @@ use App\Models\Student;
 use App\Models\Gender;
 use App\Models\NoInduk;
 use App\Models\Religion;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Faker\Factory as Faker;
 
 class ClassesSeeder extends Seeder
@@ -53,7 +56,7 @@ class ClassesSeeder extends Seeder
             $className = "{$prefix}-{$i}";
             $class = Classes::updateOrCreate(['name' => $className]);
 
-            $sections = ['Section A', 'Section B'];
+            $sections = ['Section A', 'Section B', 'Section C'];
             foreach ($sections as $sectionName) {
                 $section = Section::updateOrCreate([
                     'class_id' => $class->id,
@@ -66,8 +69,7 @@ class ClassesSeeder extends Seeder
 
                     // Buat atau update student
                     Student::updateOrCreate(
-                        ['no_induk_id' => $noInduk->id],
-                        [
+                        ['no_induk_id' => $noInduk->id,
                             'class_id' => $class->id,
                             'section_id' => $section->id,
                             'gender_id' => $genders->random()->id,

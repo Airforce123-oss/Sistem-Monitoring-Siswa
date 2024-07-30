@@ -20,5 +20,6 @@ class NoIndukSeeder extends Seeder
         }
 
         DB::table('no_induks')->insert($noInduks);
+        
     }
 }

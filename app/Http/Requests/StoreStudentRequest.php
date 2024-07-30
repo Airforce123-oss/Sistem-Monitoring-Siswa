@@ -27,7 +27,8 @@ class StoreStudentRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', 'unique:students,email'],
             'class_id' => ['required', 'exists:classes,id'],
             'section_id' => ['required', 'exists:sections,id'],
-            'gender_id' => 'required', 'exists:genders,id',
+            'gender_id' => ['required', 'exists:genders,id'],
+
             'religion_id' => ['required', 'exists:religions,id'],
 
         ];

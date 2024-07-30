@@ -1,53 +1,57 @@
 <script setup>
 import { initFlowbite } from "flowbite";
 import Pagination from "../../Components/Pagination.vue";
-import MagnifyingGlass from "../../Components/Icons/MagnifyingGlass.vue";
 import { Link, Head, useForm, usePage, router } from "@inertiajs/vue3";
-import { onMounted, ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { type } from "jquery";
 
 const { props } = usePage();
+
+defineProps({
+    students: {
+        type: Object,
+        required: true,
+    },
+    classes: {
+        type: Object,
+        required: true,
+    },
+    genders: {
+        type: Object,
+        required: true,
+    },
+    no_induks: {
+        type: Object,
+        required: true,
+    },
+    religions: {
+        type: Object,
+        required: true,
+    },
+});
+
 const form = useForm({
     name: props.auth.user.name,
     email: props.auth.user.email,
     role_type: props.auth.user.role_type,
 });
 
-defineProps({
-    students: {
-        type: Object,
-    },
-    genders: {
-        type: Object,
-    },
-    no_induks: {
-        type: Object,
-    },
-    religions: {
-        type: Object,
-    },
-});
+let pageNumber = ref(1);
+let searchTerm = ref(props.search ?? "");
 
-let pageNumber = ref(1),
-    searchTerm = ref(usePage().props.search ?? "");
-
-let studentsUrl = computed(() => {
+const studentsUrl = computed(() => {
     const url = new URL(route("students.index"));
-
     url.searchParams.set("page", pageNumber.value);
-
     if (searchTerm.value) {
         url.searchParams.set("search", searchTerm.value);
     }
-
     return url;
 });
 
 watch(
     () => studentsUrl.value,
     (updatedStudentsUrl) => {
-        router.visit(updatedStudentsUrl, {
+        router.visit(updatedStudentsUrl.toString(), {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -63,7 +67,7 @@ const deleteStudent = (id) => {
             preserveScroll: true,
             onSuccess: () => {
                 pageNumber.value = 1;
-                router.visit(studentsUrl.value, {
+                router.visit(studentsUrl.value.toString(), {
                     replace: true,
                     preserveState: true,
                     preserveScroll: true,
@@ -74,14 +78,11 @@ const deleteStudent = (id) => {
 };
 
 const updatedPageNumber = (link) => {
-    //console.log(link.url);
-    pageNumber.value = link.url.split("=")[1];
+    pageNumber.value = link.url.split("=").pop();
 };
 
 onMounted(() => {
     initFlowbite();
-    console.log("Props received:", props);
-    console.log("Students data:", props.students);
 });
 </script>
 
@@ -346,7 +347,8 @@ onMounted(() => {
                                                 class="divide-y divide-gray-200 bg-white"
                                             >
                                                 <tr
-                                                    v-for="student in students.data"
+                                                    v-for="student in props
+                                                        .students.data"
                                                     :key="student.id"
                                                 >
                                                     <td
@@ -432,6 +434,7 @@ onMounted(() => {
                                         :data="students"
                                         :updatedPageNumber="updatedPageNumber"
                                     />
+                                    
                                 </div>
                             </div>
                         </div>

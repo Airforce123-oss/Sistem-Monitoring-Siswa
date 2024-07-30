@@ -10,6 +10,7 @@ class Student extends Model
     protected $fillable = [
         'name', 'gender_id', 'class_id', 'religion_id', 'no_induk_id'
     ];
+    
 
     public function noInduk()
     {
@@ -23,6 +24,7 @@ class Student extends Model
 
     public function gender()
     {
+        //return $this->belongsTo(Gender::class, 'gender_id');
         return $this->belongsTo(Gender::class, 'gender_id');
     }
 

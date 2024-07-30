@@ -20,7 +20,6 @@ class StudentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            //'noInduk' => new NoIndukResource($this->whenLoaded('noInduk')),
             'noInduk' => new NoIndukResource($this->whenLoaded('noInduk')),
             'name' => $this->name,
             'gender' => new GenderResource($this->whenLoaded('gender')),

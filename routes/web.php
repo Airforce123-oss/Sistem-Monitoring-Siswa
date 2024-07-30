@@ -53,9 +53,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('kelas', ClassController::class);
     Route::get('/api/sections', [StudentController::class, 'getSections']);
     Route::get('/api/religions', [StudentController::class, 'getReligion']);
-    Route::get('/api/students', [studentController::class, 'getGender']);
+    Route::get('/api/students', [studentController::class, 'indexApi']);
     Route::get('/api/genders', [studentController::class, 'getGender']);
     Route::get('/api/no_induks', [studentController::class, 'getNoInduk']);
+    // In routes/web.php or routes/api.php
+    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+
+
     //getGender getReligion getNoInduk
 
     Route::resource('/Profile', ProfileController::class);

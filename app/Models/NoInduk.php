@@ -14,6 +14,7 @@ class NoInduk extends Model
     public function students()
     {
         return $this->hasMany(Student::class, 'no_induk_id', 'id');
+        //eturn $this->hasMany(Student::class);
     }
 
 }
